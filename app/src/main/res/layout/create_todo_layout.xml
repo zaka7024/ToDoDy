@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/todo_create_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rounded_top"
+    android:backgroundTint="@color/primaryLightColor">
+
+    <EditText
+        android:id="@+id/todo_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/rounded"
+        android:backgroundTint="@color/primaryColor"
+        android:ems="10"
+        android:hint="I am going to..."
+        android:inputType="textPersonName"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/todo_category"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rounded"
+        android:backgroundTint="@color/primaryColor"
+        android:gravity="center"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/todo_edit_text"
+        app:layout_constraintTop_toBottomOf="@+id/todo_edit_text"
+        tools:text="No Category" />
+
+    <ImageView
+        android:id="@+id/todo_calendar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/todo_category"
+        app:layout_constraintStart_toEndOf="@+id/todo_category"
+        app:layout_constraintTop_toTopOf="@+id/todo_category"
+        app:srcCompat="@drawable/ic_baseline_calendar_today_24" />
+
+    <ImageView
+        android:id="@+id/todo_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/todo_calendar"
+        app:layout_constraintStart_toEndOf="@+id/todo_calendar"
+        app:layout_constraintTop_toTopOf="@+id/todo_calendar"
+        app:srcCompat="@drawable/ic_baseline_format_list_bulleted_24" />
+
+    <ImageView
+        android:id="@+id/circle"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        app:layout_constraintBottom_toBottomOf="@+id/todo_list"
+        app:layout_constraintEnd_toEndOf="@+id/todo_edit_text"
+        app:layout_constraintTop_toTopOf="@+id/todo_list"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/circle" />
+
+    <ImageView
+        android:id="@+id/todo_send"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginBottom="2dp"
+        android:rotation="-90"
+        app:layout_constraintBottom_toBottomOf="@+id/circle"
+        app:layout_constraintEnd_toEndOf="@+id/circle"
+        app:layout_constraintStart_toStartOf="@+id/circle"
+        app:layout_constraintTop_toTopOf="@+id/circle"
+        app:srcCompat="@drawable/ic_round_send_24"
+        app:tint="@color/primaryLightColor" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
