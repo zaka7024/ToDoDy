@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/drawer_item"
+        android:icon="@drawable/ic_baseline_menu_24"
+        android:enabled="true"
+        app:showAsAction="ifRoom"
+        android:title="" />
+    <item
+        android:id="@+id/taskFragment"
+        android:icon="@drawable/ic_baseline_list_alt_24"
+        android:enabled="true"
+        app:showAsAction="ifRoom"
+        android:title="Tasks" />
+    <item
+        android:id="@+id/calendarFragment"
+        android:icon="@drawable/ic_baseline_today_24"
+        android:enabled="true"
+        app:showAsAction="ifRoom"
+        android:title="Calendar" />
+    <item
+        android:id="@+id/mineFragment"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:enabled="true"
+        app:showAsAction="ifRoom"
+        android:title="Mine" />
+</menu>

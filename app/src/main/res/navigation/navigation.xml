@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/taskFragment">
+
+    <fragment
+        android:id="@+id/calendarFragment"
+        android:name="com.zaka7024.todody.ui.calendar.CalendarFragment"
+        android:label="fragment_calendar"
+        tools:layout="@layout/fragment_calendar" />
+    <fragment
+        android:id="@+id/mineFragment"
+        android:name="com.zaka7024.todody.ui.mine.MineFragment"
+        android:label="fragment_mine"
+        tools:layout="@layout/fragment_mine" />
+    <fragment
+        android:id="@+id/taskFragment"
+        android:name="com.zaka7024.todody.ui.home.TaskFragment"
+        android:label="fragment_task"
+        tools:layout="@layout/fragment_task" />
+</navigation>
