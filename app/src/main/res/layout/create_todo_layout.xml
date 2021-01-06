@@ -6,20 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/rounded_top"
-    android:backgroundTint="@color/primaryLightColor">
+    android:backgroundTint="@color/primaryLightColor"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
 
     <EditText
         android:id="@+id/todo_edit_text"
         android:layout_width="0dp"
-        android:layout_height="70dp"
+        android:layout_height="64dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/rounded"
-        android:backgroundTint="@color/primaryColor"
+        android:backgroundTint="@color/secondaryDarkColor"
         android:ems="10"
         android:hint="I am going to..."
-        android:inputType="textPersonName"
+        android:inputType="textMultiLine"
+        android:maxHeight="60dp"
+        android:maxLines="2"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:textStyle="bold"
@@ -31,24 +35,24 @@
         android:id="@+id/todo_category"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/rounded"
-        android:backgroundTint="@color/primaryColor"
+        android:backgroundTint="@color/secondaryDarkColor"
         android:gravity="center"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/todo_edit_text"
-        app:layout_constraintTop_toBottomOf="@+id/todo_edit_text"
+        app:layout_constraintTop_toBottomOf="@+id/todo_sublist_rv"
         tools:text="No Category" />
 
     <ImageView
         android:id="@+id/todo_calendar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="24dp"
         app:layout_constraintBottom_toBottomOf="@+id/todo_category"
         app:layout_constraintStart_toEndOf="@+id/todo_category"
         app:layout_constraintTop_toTopOf="@+id/todo_category"
@@ -58,7 +62,7 @@
         android:id="@+id/todo_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="24dp"
         app:layout_constraintBottom_toBottomOf="@+id/todo_calendar"
         app:layout_constraintStart_toEndOf="@+id/todo_calendar"
         app:layout_constraintTop_toTopOf="@+id/todo_calendar"
@@ -68,6 +72,7 @@
         android:id="@+id/circle"
         android:layout_width="36dp"
         android:layout_height="36dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/todo_list"
         app:layout_constraintEnd_toEndOf="@+id/todo_edit_text"
         app:layout_constraintTop_toTopOf="@+id/todo_list"
@@ -86,5 +91,16 @@
         app:layout_constraintTop_toTopOf="@+id/circle"
         app:srcCompat="@drawable/ic_round_send_24"
         app:tint="@color/primaryLightColor" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/todo_sublist_rv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/todo_subitem"
+        tools:itemCount="3"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="@+id/todo_edit_text"
+        app:layout_constraintStart_toStartOf="@+id/todo_edit_text"
+        app:layout_constraintTop_toBottomOf="@+id/todo_edit_text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

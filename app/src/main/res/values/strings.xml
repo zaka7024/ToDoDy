@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">ToDoDy</string>
+    <string name="no">No</string>
+    <string name="reminder">Reminder</string>
+    <string name="cancel">CANCEL</string>
+    <string name="done">DONE</string>
+    <string name="today">Today</string>
+    <string name="_3_days_latter">3 Days Latter</string>
+    <string name="time">Time</string>
 </resources>

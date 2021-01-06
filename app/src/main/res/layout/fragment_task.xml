@@ -23,9 +23,10 @@
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="32dp"
         android:layout_weight="0.8"
-        android:clickable="true"
+        android:backgroundTint="@color/primaryColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/primaryLightColor"
         app:srcCompat="@drawable/ic_baseline_add_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
