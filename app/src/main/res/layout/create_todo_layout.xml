@@ -20,12 +20,13 @@
         android:background="@drawable/rounded"
         android:backgroundTint="@color/secondaryDarkColor"
         android:ems="10"
-        android:hint="I am going to..."
+        android:hint="@string/i_am_going_to"
         android:inputType="textMultiLine"
         android:maxHeight="60dp"
         android:maxLines="2"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
+        android:textColorHint="@color/primaryLightColor"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -96,11 +97,12 @@
         android:id="@+id/todo_sublist_rv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        tools:listitem="@layout/todo_subitem"
-        tools:itemCount="3"
+        android:maxHeight="200dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="@+id/todo_edit_text"
         app:layout_constraintStart_toStartOf="@+id/todo_edit_text"
-        app:layout_constraintTop_toBottomOf="@+id/todo_edit_text" />
+        app:layout_constraintTop_toBottomOf="@+id/todo_edit_text"
+        tools:itemCount="3"
+        tools:listitem="@layout/todo_subitem" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

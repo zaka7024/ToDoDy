@@ -7,4 +7,7 @@
     <string name="today">Today</string>
     <string name="_3_days_latter">3 Days Latter</string>
     <string name="time">Time</string>
+    <string name="input_the_sub_title">Input the sub-title</string>
+    <string name="i_am_going_to">I am going to...</string>
+    <string name="other">Other</string>
 </resources>

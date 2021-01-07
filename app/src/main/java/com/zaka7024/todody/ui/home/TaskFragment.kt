@@ -1,23 +1,28 @@
 package com.zaka7024.todody.ui.home
 
+import android.app.Activity
 import android.app.Dialog
 import android.app.TimePickerDialog
-import android.content.res.ColorStateList
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.kizitonwose.calendarview.CalendarView
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
@@ -25,7 +30,9 @@ import com.kizitonwose.calendarview.model.DayOwner
 import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.MonthScrollListener
 import com.kizitonwose.calendarview.ui.ViewContainer
+import com.zaka7024.todody.CreateTodoSublistAdapter
 import com.zaka7024.todody.R
+import com.zaka7024.todody.data.Todo
 import com.zaka7024.todody.databinding.CalendarDayLayoutBinding
 import com.zaka7024.todody.databinding.FragmentTaskBinding
 import kotlinx.android.synthetic.main.todo_calendar_layout.*
@@ -36,47 +43,129 @@ import java.util.*
 
 
 class TaskFragment : Fragment(R.layout.fragment_task) {
+
+    private lateinit var todayTodoAdapter: TodoAdapter
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentTaskBinding.bind(view)
-        binding.textView.text = "Home Fragment"
+
+        val todos = mutableListOf(Todo("Hello, World"))
+
+        todayTodoAdapter = TodoAdapter(todos)
+
+        binding.apply {
+            todayRv.adapter = todayTodoAdapter
+            todayRv.layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        }
 
         binding.addTask.setOnClickListener {
-            showCreateTodoDialog()
+            showCreateTodoDialog(requireContext(), object : CalendarEventsListener {
+                override fun onSelectTime(calendar: Calendar) {
+
+                }
+
+                override fun onSelectReminder(calendar: Calendar) {
+                }
+
+                override fun onSelectDate(localDate: LocalDate) {
+                }
+            }, object : TodoCreateListener {
+                override fun onSend(todo: Todo) {
+                    if (todo.title.isEmpty()) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Please enter some thing",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        todos.add(todo)
+                        todayTodoAdapter.notifyItemInserted(todos.size - 1)
+                    }
+                }
+            })
         }
     }
 
-    private fun showCreateTodoDialog() {
-        val dialog = Dialog(requireContext())
+    private fun showCreateTodoDialog(
+        context: Context,
+        calendarEventsListener: CalendarEventsListener,
+        todoCreateListener: TodoCreateListener
+    ) {
+
+        val dialog = Dialog(context)
         dialog.apply {
-            //
             setContentView(R.layout.create_todo_layout)
 
-            val todoCalender = findViewById<ImageView>(R.id.todo_calendar)
-            todoCalender.setOnClickListener {
-                showCalendar(object : CalendarEventsListener {
-                    override fun onSelectTime(calendar: Calendar) {
-                        Log.i("TaskFragment", calendar.toString())
+            // Focus inTodo EditText and show th keyboard
+            val todoEditText = findViewById<EditText>(R.id.todo_edit_text)
+            todoEditText.requestFocus()
+            val inputMethodManager =
+                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+            inputMethodManager!!.toggleSoftInput(
+                InputMethodManager.SHOW_FORCED,
+                InputMethodManager.HIDE_IMPLICIT_ONLY
+            )
+
+            // Init sublist RecyclerView
+            val sublistRecyclerView = findViewById<RecyclerView>(R.id.todo_sublist_rv)
+            sublistRecyclerView.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+
+            val subTodoList = mutableListOf<String>()
+            val adapter = CreateTodoSublistAdapter(subTodoList)
+
+            adapter.onSubitemClickListener =
+                object : CreateTodoSublistAdapter.OnSubitemClickListener {
+                    override fun onClickDelete(itemPosition: Int) {
+                        // Remove the subitem from the RecyclerView
+                        subTodoList.removeAt(itemPosition)
+                        adapter.notifyItemRemoved(itemPosition)
+                        adapter.notifyItemRangeChanged(itemPosition, subTodoList.size)
                     }
 
-                    override fun onSelectReminder(calendar: Calendar) {
+                    // Function called when keyboard enter button clicked
+                    override fun onClickEnter() {
+                        subTodoList.add("Item ${subTodoList.size}")
+                        adapter.notifyItemInserted(subTodoList.size - 1)
+                        sublistRecyclerView.scrollToPosition(subTodoList.size - 1)
                     }
+                }
 
-                    override fun onSelectDate(localDate: LocalDate) {
-                    }
-                })
-            }
+            sublistRecyclerView.adapter = adapter
 
             //
-            val window: Window = window!!
+            val sendTodoButton = findViewById<ImageView>(R.id.todo_send)
+            sendTodoButton.setOnClickListener {
+                todoCreateListener.onSend(Todo(todoEditText.text.toString(), subTodoList))
+                dismiss()
+            }
 
+            // Add the first subitem
+            val todoListButton = findViewById<ImageView>(R.id.todo_list)
+            todoListButton.setOnClickListener {
+                subTodoList.add("Item ${subTodoList.size}")
+                adapter.notifyItemInserted(subTodoList.size - 1)
+                sublistRecyclerView.scrollToPosition(subTodoList.size - 1)
+            }
+
+            // Show calender view
+            val todoCalender = findViewById<ImageView>(R.id.todo_calendar)
+            todoCalender.setOnClickListener {
+                showCalendar(context, calendarEventsListener)
+            }
+
+            // Show the dialog from the bottom
             val animation = AnimationUtils.loadAnimation(
-                requireContext(),
+                context,
                 R.anim.slide_in_bottom
             )
             dialog.findViewById<ConstraintLayout>(R.id.todo_create_view).startAnimation(animation)
 
+            // Change dialog layout properties
+            val window: Window = window!!
             window.setLayout(
                 ConstraintLayout.LayoutParams.MATCH_PARENT,
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
@@ -87,11 +176,13 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
             wlp.flags = wlp.flags and WindowManager.LayoutParams.FLAG_DIM_BEHIND.inv()
             window.attributes = wlp
 
-
-
-            // Show
+            // Show the dialog
             show()
         }
+    }
+
+    interface TodoCreateListener {
+        fun onSend(todo: Todo)
     }
 
     interface CalendarEventsListener {
@@ -100,14 +191,22 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
         fun onSelectDate(localDate: LocalDate)
     }
 
-    enum class CalendarSteps{
+    enum class CalendarSteps {
         Day, ThreeDay, Week
     }
 
-    private fun showCalendar(calendarEventsListener: CalendarEventsListener) {
+    fun Activity.hideKeyboard() {
+        val imm = this.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        var view: View? = this.currentFocus
+        if (view == null) {
+            view = View(activity)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
 
+    private fun showCalendar(context: Context, calendarEventsListener: CalendarEventsListener) {
 
-        val dialog = Dialog(requireContext())
+        val dialog = Dialog(context)
         dialog.apply {
             setContentView(R.layout.todo_calendar_layout)
 
@@ -188,7 +287,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                         }
                     }
 
-                    if(day.owner == DayOwner.THIS_MONTH) {
+                    if (day.owner == DayOwner.THIS_MONTH) {
                         container.textView.setTextColor(
                             ResourcesCompat.getColor(
                                 resources,
@@ -196,7 +295,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                                 null
                             )
                         )
-                    }else {
+                    } else {
                         container.textView.setTextColor(
                             ResourcesCompat.getColor(
                                 resources,
@@ -206,7 +305,8 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                         )
                     }
                 }
-                override fun create(view: View) =  DayViewContainer(view)
+
+                override fun create(view: View) = DayViewContainer(view)
             }
 
             // Dismiss the dialog
@@ -223,14 +323,14 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
             // back to previous month if exists
             beforeMonthButton.setOnClickListener {
-                if(currentMonth > YearMonth.now()) {
+                if (currentMonth > YearMonth.now()) {
                     updateCurrentMonth(currentMonth.minusMonths(1))
                 }
             }
 
             // Move to next month if exists
             nextMonthButton.setOnClickListener {
-                if(currentMonth < YearMonth.now().plusMonths(monthsToAdd)) {
+                if (currentMonth < YearMonth.now().plusMonths(monthsToAdd)) {
                     updateCurrentMonth(currentMonth.plusMonths(1))
                 }
             }
@@ -239,7 +339,8 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
             //
             timeButton.setOnClickListener {
-                val timePickerDialog = TimePickerDialog(requireContext(),
+                val timePickerDialog = TimePickerDialog(
+                    context,
                     { view, hourOfDay, minute ->
                         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                         calendar.set(Calendar.MINUTE, minute)
@@ -254,7 +355,8 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
             //
             reminderButton.setOnClickListener {
-                val timePickerDialog = TimePickerDialog(requireContext(),
+                val timePickerDialog = TimePickerDialog(
+                    context,
                     { view, hourOfDay, minute ->
                         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                         calendar.set(Calendar.MINUTE, minute)
@@ -277,16 +379,32 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
             // Update calendar selected day and update the step views colors
             fun selectCalendarDay(stepView: View, calendarSteps: CalendarSteps) {
                 for (view in calendarStepViews) {
-                    if(view != stepView) {
-                        view.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.secondaryDarkColor)
-                        view.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.primaryTextColor))
-                    }else{
-                        view.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.primaryDarkColor)
-                        view.setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.primaryLightColor))
+                    if (view != stepView) {
+                        view.backgroundTintList = ContextCompat.getColorStateList(
+                            context,
+                            R.color.secondaryDarkColor
+                        )
+                        view.setTextColor(
+                            ContextCompat.getColorStateList(
+                                context,
+                                R.color.primaryTextColor
+                            )
+                        )
+                    } else {
+                        view.backgroundTintList = ContextCompat.getColorStateList(
+                            context,
+                            R.color.primaryDarkColor
+                        )
+                        view.setTextColor(
+                            ContextCompat.getColorStateList(
+                                context,
+                                R.color.primaryLightColor
+                            )
+                        )
                     }
                 }
 
-                currentSelectedDay = when(calendarSteps) {
+                currentSelectedDay = when (calendarSteps) {
                     CalendarSteps.Day -> today
                     CalendarSteps.ThreeDay -> today.plusDays(3)
                     CalendarSteps.Week -> today.plusDays(7)
