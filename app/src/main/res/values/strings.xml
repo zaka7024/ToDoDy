@@ -11,4 +11,5 @@
     <string name="i_am_going_to">I am going to...</string>
     <string name="other">Other</string>
     <string name="new_category">New Category</string>
+    <string name="no_tasks_on_the_day_n_click_to_cteate_your_task">No tasks on the day. \n Click + to cteate your task.</string>
 </resources>

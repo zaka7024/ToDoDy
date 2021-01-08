@@ -14,8 +14,6 @@ import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import androidx.appcompat.view.menu.MenuBuilder
-import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -165,7 +163,9 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                 popupMenu.setOnMenuItemClickListener { item ->
                     if (item.itemId == R.id.add_category_item) {
 
-                    }else{
+                    } else {
+                        todoCategoryButton.alpha = 0f
+                        todoCategoryButton.animate().alpha(1f).duration = 400
                         todoCategoryButton.text = item.title
                     }
                     true
@@ -292,13 +292,13 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                         day.date -> {
                             textView.setTextColor(
                                 ResourcesCompat.getColor(
-                                    resources,
+                                    context.resources,
                                     R.color.primaryDarkColor,
                                     null
                                 )
                             )
                             textView.background = ResourcesCompat.getDrawable(
-                                resources,
+                                context.resources,
                                 R.drawable.calendar_day_bg,
                                 null
                             )
@@ -312,7 +312,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                     if (day.owner == DayOwner.THIS_MONTH) {
                         container.textView.setTextColor(
                             ResourcesCompat.getColor(
-                                resources,
+                                context.resources,
                                 R.color.primaryColor,
                                 null
                             )
@@ -320,7 +320,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                     } else {
                         container.textView.setTextColor(
                             ResourcesCompat.getColor(
-                                resources,
+                                context.resources,
                                 R.color.secondaryDarkColor,
                                 null
                             )
