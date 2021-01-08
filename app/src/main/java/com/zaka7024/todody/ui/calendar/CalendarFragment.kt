@@ -2,6 +2,7 @@ package com.zaka7024.todody.ui.calendar
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -10,8 +11,13 @@ import com.kizitonwose.calendarview.model.DayOwner
 import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
 import com.zaka7024.todody.R
+import com.zaka7024.todody.data.Todo
 import com.zaka7024.todody.databinding.CalendarDayLayoutBinding
 import com.zaka7024.todody.databinding.FragmentCalendarBinding
+import com.zaka7024.todody.ui.home.TaskFragment
+import com.zaka7024.todody.ui.home.showCalendar
+import com.zaka7024.todody.ui.home.showCreateTodoDialog
+import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.WeekFields
 import java.util.*
@@ -43,6 +49,33 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
         //
         calendarViewModel = ViewModelProviders.of(this).get(CalendarViewModel::class.java)
         binding = FragmentCalendarBinding.bind(view)
+
+        binding.addTask.setOnClickListener {
+            showCreateTodoDialog(requireContext(), object : TaskFragment.CalendarEventsListener {
+                override fun onSelectTime(calendar: Calendar) {
+
+                }
+
+                override fun onSelectReminder(calendar: Calendar) {
+                }
+
+                override fun onSelectDate(localDate: LocalDate) {
+                }
+            }, object : TaskFragment.TodoCreateListener {
+                override fun onSend(todo: Todo) {
+                    if (todo.title.isEmpty()) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Please enter some thing",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        //todos.add(todo)
+                        //todayTodoAdapter.notifyItemInserted(todos.size - 1)
+                    }
+                }
+            })
+        }
 
         //
         setUpCalendar()
