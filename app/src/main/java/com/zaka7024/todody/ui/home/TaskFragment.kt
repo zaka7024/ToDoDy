@@ -13,10 +13,9 @@ import android.view.Window
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.view.menu.MenuBuilder
+import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -136,11 +135,11 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
             sublistRecyclerView.adapter = adapter
 
-            //
+            // Send the todo
             val sendTodoButton = findViewById<ImageView>(R.id.todo_send)
             sendTodoButton.setOnClickListener {
                 todoCreateListener.onSend(Todo(todoEditText.text.toString(), subTodoList))
-                dismiss()
+                if (todoEditText.text.toString().isNotEmpty()) dismiss()
             }
 
             // Add the first subitem
@@ -149,6 +148,29 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                 subTodoList.add("Item ${subTodoList.size}")
                 adapter.notifyItemInserted(subTodoList.size - 1)
                 sublistRecyclerView.scrollToPosition(subTodoList.size - 1)
+            }
+
+            // Category menu
+            val todoCategoryButton = findViewById<TextView>(R.id.todo_category)
+            val categories = arrayOf("Work", "Home")
+            todoCategoryButton.text = categories.first()
+            todoCategoryButton.setOnClickListener {
+                val popupMenu = PopupMenu(context, it)
+                val menu = popupMenu.menu
+                //TODO:: Add icon to the (New Category) Item
+                popupMenu.inflate(R.menu.category_menu)
+                for (category in categories) {
+                    menu.add(category)
+                }
+                popupMenu.setOnMenuItemClickListener { item ->
+                    if (item.itemId == R.id.add_category_item) {
+
+                    }else{
+                        todoCategoryButton.text = item.title
+                    }
+                    true
+                }
+                popupMenu.show()
             }
 
             // Show calender view
