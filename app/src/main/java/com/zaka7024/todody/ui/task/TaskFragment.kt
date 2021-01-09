@@ -1,6 +1,5 @@
-package com.zaka7024.todody.ui.home
+package com.zaka7024.todody.ui.task
 
-import android.app.Activity
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
@@ -18,6 +17,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kizitonwose.calendarview.CalendarView
@@ -42,6 +42,7 @@ import java.util.*
 class TaskFragment : Fragment(R.layout.fragment_task) {
 
     private lateinit var todayTodoAdapter: TodoAdapter
+    private lateinit var othersTodoAdapter: TodoAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,12 +50,26 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
         val binding = FragmentTaskBinding.bind(view)
 
         val todos = mutableListOf(Todo("Hello, World"))
+        val otherTodos = mutableListOf(
+            Todo("Hello, Other World"),
+            Todo("Hello, Second World")
+        )
 
-        todayTodoAdapter = TodoAdapter(todos)
+        todayTodoAdapter = TodoAdapter(todos, object : TodoAdapter.OnTodoHolderClickListener {
+            override fun onClick(todo: Todo) {
+                findNavController().navigate(TaskFragmentDirections.actionTaskFragmentToTodoEditor2())
+            }
+        })
+
+        othersTodoAdapter = TodoAdapter(otherTodos)
 
         binding.apply {
             todayRv.adapter = todayTodoAdapter
             todayRv.layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+
+            otherRv.adapter = othersTodoAdapter
+            otherRv.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         }
 

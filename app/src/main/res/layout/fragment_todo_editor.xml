@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.TodoEditor"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primaryLightColor">
+
+    <EditText
+        android:id="@+id/todo_edittext"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/rounded"
+        android:backgroundTint="@color/secondaryLightColor"
+        android:ems="10"
+        android:hint="@string/i_am_going_to"
+        android:inputType="textMultiLine"
+        android:maxHeight="60dp"
+        android:maxLines="2"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textColor="@color/primaryTextColor"
+        android:textColorHint="@color/primaryLightColor"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/category"
+        app:layout_constraintTop_toBottomOf="@+id/category" />
+
+    <TextView
+        android:id="@+id/category"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rounded"
+        android:backgroundTint="@color/secondaryDarkColor"
+        android:gravity="center"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:text="@string/new_category"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/todo_sublist_rv"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/todo_edittext"
+        app:layout_constraintStart_toStartOf="@+id/todo_edittext"
+        app:layout_constraintTop_toBottomOf="@+id/todo_edittext"
+        tools:itemCount="3"
+        tools:listitem="@layout/todo_subitem" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/transparent_bg"
+        android:drawableStart="@drawable/ic_baseline_add_24"
+        android:gravity="start|center_vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:drawablePadding="4dp"
+        android:text="@string/add_sub_task"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/todo_sublist_rv" />
+</androidx.constraintlayout.widget.ConstraintLayout>

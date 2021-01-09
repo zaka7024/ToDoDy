@@ -17,7 +17,16 @@
         tools:layout="@layout/fragment_mine" />
     <fragment
         android:id="@+id/taskFragment"
-        android:name="com.zaka7024.todody.ui.home.TaskFragment"
+        android:name="com.zaka7024.todody.ui.task.TaskFragment"
         android:label="fragment_task"
-        tools:layout="@layout/fragment_task" />
+        tools:layout="@layout/fragment_task" >
+        <action
+            android:id="@+id/action_taskFragment_to_todoEditor2"
+            app:destination="@id/todoEditor" />
+    </fragment>
+    <fragment
+        android:id="@+id/todoEditor"
+        android:name="com.zaka7024.todody.ui.TodoEditor"
+        android:label="fragment_todo_editor"
+        tools:layout="@layout/fragment_todo_editor" />
 </navigation>

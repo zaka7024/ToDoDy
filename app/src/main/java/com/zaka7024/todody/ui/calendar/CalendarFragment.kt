@@ -14,9 +14,8 @@ import com.zaka7024.todody.R
 import com.zaka7024.todody.data.Todo
 import com.zaka7024.todody.databinding.CalendarDayLayoutBinding
 import com.zaka7024.todody.databinding.FragmentCalendarBinding
-import com.zaka7024.todody.ui.home.TaskFragment
-import com.zaka7024.todody.ui.home.showCalendar
-import com.zaka7024.todody.ui.home.showCreateTodoDialog
+import com.zaka7024.todody.ui.task.TaskFragment
+import com.zaka7024.todody.ui.task.showCreateTodoDialog
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.WeekFields

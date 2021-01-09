@@ -1,17 +1,23 @@
-package com.zaka7024.todody.ui.home
+package com.zaka7024.todody.ui.task
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.zaka7024.todody.data.Todo
 import com.zaka7024.todody.databinding.TodoItemBinding
 
-class TodoAdapter(private val todos: MutableList<Todo>) :
+class TodoAdapter(
+    private val todos: MutableList<Todo>,
+    private val onTodoHolderClickListener: OnTodoHolderClickListener? = null
+) :
     RecyclerView.Adapter<TodoAdapter.TodoHolder>() {
 
-    class TodoHolder(
+    interface OnTodoHolderClickListener {
+        fun onClick(todo: Todo)
+    }
+
+    inner class TodoHolder(
         private val todoItemBinding: TodoItemBinding,
         private val todos: MutableList<Todo>
     ) :
@@ -23,9 +29,13 @@ class TodoAdapter(private val todos: MutableList<Todo>) :
             val todo = todos[itemPosition]
             todoItemBinding.todoText.text = todo.title
 
+            todoItemBinding.root.setOnClickListener {
+                onTodoHolderClickListener?.onClick(todo)
+            }
+
             todoItemBinding.root.animate().translationYBy(20f)
 
-            if(todo.subItems.isNotEmpty()) {
+            if (todo.subItems.isNotEmpty()) {
                 todoItemBinding.hint.visibility = View.VISIBLE
             }
         }
