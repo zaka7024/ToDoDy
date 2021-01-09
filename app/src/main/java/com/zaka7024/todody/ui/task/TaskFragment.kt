@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.Window
@@ -17,6 +18,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,27 +34,30 @@ import com.zaka7024.todody.R
 import com.zaka7024.todody.data.Todo
 import com.zaka7024.todody.databinding.CalendarDayLayoutBinding
 import com.zaka7024.todody.databinding.FragmentTaskBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.todo_calendar_layout.*
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.WeekFields
 import java.util.*
 
-
+@AndroidEntryPoint
 class TaskFragment : Fragment(R.layout.fragment_task) {
-
     private lateinit var todayTodoAdapter: TodoAdapter
     private lateinit var othersTodoAdapter: TodoAdapter
+
+    private val taskViewModel by viewModels<TaskViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentTaskBinding.bind(view)
 
-        val todos = mutableListOf(Todo("Hello, World"))
+        val todos = mutableListOf<Todo>()
+
         val otherTodos = mutableListOf(
-            Todo("Hello, Other World"),
-            Todo("Hello, Second World")
+            Todo(title = "Hello, Other World"),
+            Todo(title = "Hello, Second World")
         )
 
         todayTodoAdapter = TodoAdapter(todos, object : TodoAdapter.OnTodoHolderClickListener {
@@ -72,6 +77,15 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
             otherRv.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         }
+
+        // test
+        taskViewModel.userTodos.observe(viewLifecycleOwner, {
+            userTodos ->
+            Log.i("taskViewModel", "todos: $userTodos")
+            todos.clear()
+            todos.addAll(userTodos)
+            todayTodoAdapter.notifyDataSetChanged()
+        })
 
         binding.addTask.setOnClickListener {
             showCreateTodoDialog(requireContext(), object : CalendarEventsListener {
@@ -93,7 +107,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        todos.add(todo)
+                        taskViewModel.saveTodo(todo)
                         todayTodoAdapter.notifyItemInserted(todos.size - 1)
                     }
                 }
@@ -166,7 +180,7 @@ fun showCreateTodoDialog(
         // Send the todo
         val sendTodoButton = findViewById<ImageView>(R.id.todo_send)
         sendTodoButton.setOnClickListener {
-            todoCreateListener.onSend(Todo(todoEditText.text.toString(), subTodoList))
+            todoCreateListener.onSend(Todo(title = todoEditText.text.toString(), subItems = subTodoList))
             if (todoEditText.text.toString().isNotEmpty()) dismiss()
         }
 
