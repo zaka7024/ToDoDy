@@ -34,6 +34,7 @@ import com.zaka7024.todody.R
 import com.zaka7024.todody.data.Todo
 import com.zaka7024.todody.databinding.CalendarDayLayoutBinding
 import com.zaka7024.todody.databinding.FragmentTaskBinding
+import com.zaka7024.todody.utils.WrapContentLinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.todo_calendar_layout.*
 import java.time.LocalDate
@@ -62,7 +63,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
         todayTodoAdapter = TodoAdapter(todos, object : TodoAdapter.OnTodoHolderClickListener {
             override fun onClick(todo: Todo) {
-                findNavController().navigate(TaskFragmentDirections.actionTaskFragmentToTodoEditor2())
+                findNavController().navigate(TaskFragmentDirections.actionTaskFragmentToTodoEditor2(todo))
             }
         })
 
@@ -71,20 +72,22 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
         binding.apply {
             todayRv.adapter = todayTodoAdapter
             todayRv.layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                WrapContentLinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
             otherRv.adapter = othersTodoAdapter
             otherRv.layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                WrapContentLinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         }
 
         // test
         taskViewModel.userTodos.observe(viewLifecycleOwner, {
             userTodos ->
             Log.i("taskViewModel", "todos: $userTodos")
+            val currentSize = todos.size
             todos.clear()
             todos.addAll(userTodos)
-            todayTodoAdapter.notifyDataSetChanged()
+            todayTodoAdapter.notifyItemRangeRemoved(0, currentSize)
+            todayTodoAdapter.notifyItemRangeInserted(0, todos.size)
         })
 
         binding.addTask.setOnClickListener {

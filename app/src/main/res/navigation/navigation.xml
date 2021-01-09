@@ -28,5 +28,9 @@
         android:id="@+id/todoEditor"
         android:name="com.zaka7024.todody.ui.TodoEditor"
         android:label="fragment_todo_editor"
-        tools:layout="@layout/fragment_todo_editor" />
+        tools:layout="@layout/fragment_todo_editor" >
+        <argument
+            android:name="todo"
+            app:argType="com.zaka7024.todody.data.Todo" />
+    </fragment>
 </navigation>

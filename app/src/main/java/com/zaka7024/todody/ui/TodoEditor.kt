@@ -14,5 +14,12 @@ class TodoEditor : Fragment(R.layout.fragment_todo_editor) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentTodoEditorBinding.bind(view)
+
+        val args = TodoEditorArgs.fromBundle(requireArguments())
+
+        binding.apply {
+            val todo = args.todo
+            todoEdittext.setText(todo.title)
+        }
     }
 }
