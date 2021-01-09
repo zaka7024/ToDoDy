@@ -14,6 +14,7 @@ data class Todo(
     val id: Int? = null,
     val title: String,
     val subItems: MutableList<String> = mutableListOf(),
-    val date: LocalDate? = null,
-    val time: Date? = null
+    var date: LocalDate? = null,
+    var time: Date? = null,
+    var reminderTime: Date? = null
 ): Parcelable

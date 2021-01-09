@@ -27,7 +27,10 @@ class TodoAdapter(
 
         fun bind(itemPosition: Int) {
             val todo = todos[itemPosition]
-            todoItemBinding.todoText.text = todo.title
+            todoItemBinding.apply {
+                todoText.text = todo.title
+                date.text = todo.date.toString()
+            }
 
             todoItemBinding.root.setOnClickListener {
                 onTodoHolderClickListener?.onClick(todo)

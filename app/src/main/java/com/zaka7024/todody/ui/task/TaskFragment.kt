@@ -34,6 +34,7 @@ import com.zaka7024.todody.R
 import com.zaka7024.todody.data.Todo
 import com.zaka7024.todody.databinding.CalendarDayLayoutBinding
 import com.zaka7024.todody.databinding.FragmentTaskBinding
+import com.zaka7024.todody.ui.calendar.CalendarFragment
 import com.zaka7024.todody.utils.WrapContentLinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.todo_calendar_layout.*
@@ -49,6 +50,30 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
     private val taskViewModel by viewModels<TaskViewModel>()
 
+    // Calendar view  holder
+    class DayViewContainer(
+        view: View,
+        var setOnDayViewClickListener: SetOnDayViewClickListener? = null
+    ) : ViewContainer(view) {
+
+        interface SetOnDayViewClickListener {
+            fun onclick()
+        }
+
+        val binding = CalendarDayLayoutBinding.bind(view)
+        val textView = binding.calendarDayText
+        lateinit var day: CalendarDay
+
+        init {
+            view.setOnClickListener {
+                // Select the day
+                if (day.owner == DayOwner.THIS_MONTH) {
+                    setOnDayViewClickListener?.onclick()
+                }
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -63,7 +88,11 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
         todayTodoAdapter = TodoAdapter(todos, object : TodoAdapter.OnTodoHolderClickListener {
             override fun onClick(todo: Todo) {
-                findNavController().navigate(TaskFragmentDirections.actionTaskFragmentToTodoEditor2(todo))
+                findNavController().navigate(
+                    TaskFragmentDirections.actionTaskFragmentToTodoEditor2(
+                        todo
+                    )
+                )
             }
         })
 
@@ -72,16 +101,23 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
         binding.apply {
             todayRv.adapter = todayTodoAdapter
             todayRv.layoutManager =
-                WrapContentLinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                WrapContentLinearLayoutManager(
+                    requireContext(),
+                    LinearLayoutManager.VERTICAL,
+                    false
+                )
 
             otherRv.adapter = othersTodoAdapter
             otherRv.layoutManager =
-                WrapContentLinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                WrapContentLinearLayoutManager(
+                    requireContext(),
+                    LinearLayoutManager.VERTICAL,
+                    false
+                )
         }
 
         // test
-        taskViewModel.userTodos.observe(viewLifecycleOwner, {
-            userTodos ->
+        taskViewModel.userTodos.observe(viewLifecycleOwner, { userTodos ->
             Log.i("taskViewModel", "todos: $userTodos")
             val currentSize = todos.size
             todos.clear()
@@ -91,17 +127,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
         })
 
         binding.addTask.setOnClickListener {
-            showCreateTodoDialog(requireContext(), object : CalendarEventsListener {
-                override fun onSelectTime(calendar: Calendar) {
-
-                }
-
-                override fun onSelectReminder(calendar: Calendar) {
-                }
-
-                override fun onSelectDate(localDate: LocalDate) {
-                }
-            }, object : TodoCreateListener {
+            showCreateTodoDialog(requireContext(), object : TodoCreateListener {
                 override fun onSend(todo: Todo) {
                     if (todo.title.isEmpty()) {
                         Toast.makeText(
@@ -135,7 +161,6 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
 fun showCreateTodoDialog(
     context: Context,
-    calendarEventsListener: TaskFragment.CalendarEventsListener,
     todoCreateListener: TaskFragment.TodoCreateListener
 ) {
 
@@ -180,13 +205,6 @@ fun showCreateTodoDialog(
 
         sublistRecyclerView.adapter = adapter
 
-        // Send the todo
-        val sendTodoButton = findViewById<ImageView>(R.id.todo_send)
-        sendTodoButton.setOnClickListener {
-            todoCreateListener.onSend(Todo(title = todoEditText.text.toString(), subItems = subTodoList))
-            if (todoEditText.text.toString().isNotEmpty()) dismiss()
-        }
-
         // Add the first subitem
         val todoListButton = findViewById<ImageView>(R.id.todo_list)
         todoListButton.setOnClickListener {
@@ -220,10 +238,41 @@ fun showCreateTodoDialog(
             popupMenu.show()
         }
 
+        var time: Calendar? = null
+        var reminderTime: Calendar? = null
+        var selectedDate: LocalDate? = null
+
         // Show calender view
         val todoCalender = findViewById<ImageView>(R.id.todo_calendar)
         todoCalender.setOnClickListener {
-            showCalendar(context, calendarEventsListener)
+            showCalendar(context, object : TaskFragment.CalendarEventsListener {
+                override fun onSelectTime(calendar: Calendar) {
+                    time = calendar
+                }
+
+                override fun onSelectReminder(calendar: Calendar) {
+                    reminderTime = calendar
+                }
+
+                override fun onSelectDate(localDate: LocalDate) {
+                    selectedDate = localDate
+                }
+            })
+        }
+
+        // Send the todo
+        val sendTodoButton = findViewById<ImageView>(R.id.todo_send)
+        sendTodoButton.setOnClickListener {
+            todoCreateListener.onSend(
+                Todo(
+                    title = todoEditText.text.toString(),
+                    subItems = subTodoList,
+                    time = time?.time,
+                    reminderTime = reminderTime?.time,
+                    date = selectedDate
+                )
+            )
+            if (todoEditText.text.toString().isNotEmpty()) dismiss()
         }
 
         // Show the dialog from the bottom
@@ -278,6 +327,9 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
         val todayButton = findViewById<TextView>(R.id.todayButton)
         val nextThreeButton = findViewById<TextView>(R.id.threeDaysButton)
 
+        //
+        calendarEventsListener.onSelectDate(currentSelectedDay)
+
         // Setup the calendar view
         val calendarView = findViewById<CalendarView>(R.id.calendarView)
         calendarView.setup(currentMonth, lastMonth, firstDayOfWeek)
@@ -287,30 +339,22 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
         // Set month name
         currentMonthTextView.text = currentMonth.month.name
 
-        // Calendar view  holder
-        class DayViewContainer(view: View) : ViewContainer(view) {
-            val binding = CalendarDayLayoutBinding.bind(view)
-            val textView = binding.calendarDayText
-            lateinit var day: CalendarDay
-
-            init {
-                view.setOnClickListener {
-                    // Select the day
-                    if (day.owner == DayOwner.THIS_MONTH) {
-                        currentSelectedDay = day.date
-                        calendarView.notifyCalendarChanged()
-                    }
-                }
-            }
-        }
-
         // Bind the view holder
-        calendarView.dayBinder = object : DayBinder<DayViewContainer> {
+        calendarView.dayBinder = object : DayBinder<TaskFragment.DayViewContainer> {
 
-            override fun bind(container: DayViewContainer, day: CalendarDay) {
+            override fun bind(container: TaskFragment.DayViewContainer, day: CalendarDay) {
                 val textView = container.textView
                 textView.text = day.date.dayOfMonth.toString()
                 container.day = day
+
+                container.setOnDayViewClickListener = object :
+                    TaskFragment.DayViewContainer.SetOnDayViewClickListener {
+                    override fun onclick() {
+                        currentSelectedDay = day.date
+                        calendarEventsListener.onSelectDate(currentSelectedDay)
+                        calendarView.notifyCalendarChanged()
+                    }
+                }
 
                 when (currentSelectedDay) {
                     day.date -> {
@@ -352,7 +396,7 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
                 }
             }
 
-            override fun create(view: View) = DayViewContainer(view)
+            override fun create(view: View) = TaskFragment.DayViewContainer(view)
         }
 
         // Dismiss the dialog
@@ -381,34 +425,37 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
             }
         }
 
-        val calendar = Calendar.getInstance()
+        val timeCalendar = Calendar.getInstance()
 
         //
         timeButton.setOnClickListener {
             val timePickerDialog = TimePickerDialog(
                 context,
                 { view, hourOfDay, minute ->
-                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                    calendar.set(Calendar.MINUTE, minute)
-                    calendar.set(Calendar.SECOND, 0)
+                    timeCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                    timeCalendar.set(Calendar.MINUTE, minute)
+                    timeCalendar.set(Calendar.SECOND, 0)
 
-                    calendarEventsListener.onSelectTime(calendar)
+                    calendarEventsListener.onSelectTime(timeCalendar)
 
-                }, calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), true
+                }, timeCalendar.get(Calendar.HOUR), timeCalendar.get(Calendar.MINUTE), true
             )
             timePickerDialog.show()
         }
 
         //
+        val reminderCalendar = Calendar.getInstance()
         reminderButton.setOnClickListener {
             val timePickerDialog = TimePickerDialog(
                 context,
                 { view, hourOfDay, minute ->
-                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                    calendar.set(Calendar.MINUTE, minute)
-                    calendar.set(Calendar.SECOND, 0)
+                    reminderCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                    reminderCalendar.set(Calendar.MINUTE, minute)
+                    reminderCalendar.set(Calendar.SECOND, 0)
 
-                }, calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), true
+                    calendarEventsListener.onSelectReminder(reminderCalendar)
+
+                }, reminderCalendar.get(Calendar.HOUR), reminderCalendar.get(Calendar.MINUTE), true
             )
             timePickerDialog.show()
         }

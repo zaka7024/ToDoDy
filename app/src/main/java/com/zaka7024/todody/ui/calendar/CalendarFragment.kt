@@ -29,7 +29,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
     private lateinit var calendarViewModel: CalendarViewModel
     private lateinit var todoAdapter: TodoAdapter
 
-    class DayViewContainer(
+    class DayContainer(
         view: View,
         var setOnDayViewClickListener: SetOnDayViewClickListener? = null
     ) : ViewContainer(view) {
@@ -67,17 +67,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
 
         // test
         binding.addTask.setOnClickListener {
-            showCreateTodoDialog(requireContext(), object : TaskFragment.CalendarEventsListener {
-                override fun onSelectTime(calendar: Calendar) {
-
-                }
-
-                override fun onSelectReminder(calendar: Calendar) {
-                }
-
-                override fun onSelectDate(localDate: LocalDate) {
-                }
-            }, object : TaskFragment.TodoCreateListener {
+            showCreateTodoDialog(requireContext(), object : TaskFragment.TodoCreateListener {
                 override fun onSend(todo: Todo) {
                     if (todo.title.isEmpty()) {
                         Toast.makeText(
@@ -108,13 +98,13 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
             calendarView.scrollToMonth(todayMonth)
 
             // Bind the view holder
-            calendarView.dayBinder = object : DayBinder<DayViewContainer> {
-                override fun bind(container: DayViewContainer, day: CalendarDay) {
+            calendarView.dayBinder = object : DayBinder<DayContainer> {
+                override fun bind(container: DayContainer, day: CalendarDay) {
                     container.textView.text = day.date.dayOfMonth.toString()
 
                     container.day = day
                     container.setOnDayViewClickListener =
-                        object : DayViewContainer.SetOnDayViewClickListener {
+                        object : DayContainer.SetOnDayViewClickListener {
                             override fun onclick() {
                                 if (day.owner == DayOwner.THIS_MONTH) {
                                     calendarViewModel.setCurrentSelectedDay(day.date)
@@ -159,7 +149,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
                     }
                 }
 
-                override fun create(view: View) = DayViewContainer(view)
+                override fun create(view: View) = DayContainer(view)
             }
         }
     }
