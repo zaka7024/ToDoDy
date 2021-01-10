@@ -31,7 +31,9 @@ import com.kizitonwose.calendarview.ui.MonthScrollListener
 import com.kizitonwose.calendarview.ui.ViewContainer
 import com.zaka7024.todody.CreateTodoSublistAdapter
 import com.zaka7024.todody.R
+import com.zaka7024.todody.data.Subitem
 import com.zaka7024.todody.data.Todo
+import com.zaka7024.todody.data.TodosWithSubitems
 import com.zaka7024.todody.databinding.CalendarDayLayoutBinding
 import com.zaka7024.todody.databinding.FragmentTaskBinding
 import com.zaka7024.todody.ui.calendar.CalendarFragment
@@ -79,7 +81,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
         val binding = FragmentTaskBinding.bind(view)
 
-        val todos = mutableListOf<Todo>()
+        val todos = mutableListOf<TodosWithSubitems>()
 
         val otherTodos = mutableListOf(
             Todo(title = "Hello, Other World"),
@@ -87,16 +89,16 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
         )
 
         todayTodoAdapter = TodoAdapter(todos, object : TodoAdapter.OnTodoHolderClickListener {
-            override fun onClick(todo: Todo) {
+            override fun onClick(todoItem: TodosWithSubitems) {
                 findNavController().navigate(
                     TaskFragmentDirections.actionTaskFragmentToTodoEditor2(
-                        todo
+                        todoItem
                     )
                 )
             }
         })
 
-        othersTodoAdapter = TodoAdapter(otherTodos)
+        othersTodoAdapter = TodoAdapter(todos)
 
         binding.apply {
             todayRv.adapter = todayTodoAdapter
@@ -128,7 +130,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
         binding.addTask.setOnClickListener {
             showCreateTodoDialog(requireContext(), object : TodoCreateListener {
-                override fun onSend(todo: Todo) {
+                override fun onSend(todo: Todo, subitems: List<Subitem>) {
                     if (todo.title.isEmpty()) {
                         Toast.makeText(
                             requireContext(),
@@ -136,7 +138,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        taskViewModel.saveTodo(todo)
+                        taskViewModel.saveTodo(todo, subitems.toTypedArray())
                         todayTodoAdapter.notifyItemInserted(todos.size - 1)
                     }
                 }
@@ -145,7 +147,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
     }
 
     interface TodoCreateListener {
-        fun onSend(todo: Todo)
+        fun onSend(todo: Todo, subitems: List<Subitem>)
     }
 
     interface CalendarEventsListener {
@@ -183,7 +185,7 @@ fun showCreateTodoDialog(
         sublistRecyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-        val subTodoList = mutableListOf<String>()
+        val subTodoList = mutableListOf<Subitem>()
         val adapter = CreateTodoSublistAdapter(subTodoList)
 
         adapter.onSubitemClickListener =
@@ -197,7 +199,7 @@ fun showCreateTodoDialog(
 
                 // Function called when keyboard enter button clicked
                 override fun onClickEnter() {
-                    subTodoList.add("Item ${subTodoList.size}")
+                    subTodoList.add(Subitem(item = "Item ${subTodoList.size}"))
                     adapter.notifyItemInserted(subTodoList.size - 1)
                     sublistRecyclerView.scrollToPosition(subTodoList.size - 1)
                 }
@@ -208,7 +210,7 @@ fun showCreateTodoDialog(
         // Add the first subitem
         val todoListButton = findViewById<ImageView>(R.id.todo_list)
         todoListButton.setOnClickListener {
-            subTodoList.add("Item ${subTodoList.size}")
+            subTodoList.add(Subitem(item = "Item ${subTodoList.size}"))
             adapter.notifyItemInserted(subTodoList.size - 1)
             sublistRecyclerView.scrollToPosition(subTodoList.size - 1)
         }
@@ -266,11 +268,11 @@ fun showCreateTodoDialog(
             todoCreateListener.onSend(
                 Todo(
                     title = todoEditText.text.toString(),
-                    subItems = subTodoList,
                     time = time?.time,
                     reminderTime = reminderTime?.time,
                     date = selectedDate
-                )
+                ),
+                subitems = subTodoList
             )
             if (todoEditText.text.toString().isNotEmpty()) dismiss()
         }

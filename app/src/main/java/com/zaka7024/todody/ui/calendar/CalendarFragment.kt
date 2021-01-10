@@ -13,6 +13,7 @@ import com.kizitonwose.calendarview.model.DayOwner
 import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
 import com.zaka7024.todody.R
+import com.zaka7024.todody.data.Subitem
 import com.zaka7024.todody.data.Todo
 import com.zaka7024.todody.databinding.CalendarDayLayoutBinding
 import com.zaka7024.todody.databinding.FragmentCalendarBinding
@@ -57,10 +58,10 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
         binding = FragmentCalendarBinding.bind(view)
 
         val todos = mutableListOf(Todo(title = "Hello, Again"))
-        todoAdapter = TodoAdapter(todos)
+        //todoAdapter = TodoAdapter(todos)
 
         binding.apply {
-            todosRv.adapter = todoAdapter
+           // todosRv.adapter = todoAdapter
             todosRv.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         }
@@ -68,7 +69,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
         // test
         binding.addTask.setOnClickListener {
             showCreateTodoDialog(requireContext(), object : TaskFragment.TodoCreateListener {
-                override fun onSend(todo: Todo) {
+                override fun onSend(todo: Todo, subitems: List<Subitem>) {
                     if (todo.title.isEmpty()) {
                         Toast.makeText(
                             requireContext(),

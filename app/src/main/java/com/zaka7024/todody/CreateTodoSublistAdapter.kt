@@ -11,10 +11,11 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.recyclerview.widget.RecyclerView
+import com.zaka7024.todody.data.Subitem
 import com.zaka7024.todody.databinding.TodoSubitemBinding
 
 
-class CreateTodoSublistAdapter(private val sublist: MutableList<String>) :
+class CreateTodoSublistAdapter(private val sublist: MutableList<Subitem>) :
     RecyclerView.Adapter<CreateTodoSublistAdapter.SubitemHolder>() {
 
     var onSubitemClickListener: OnSubitemClickListener? = null
@@ -30,7 +31,7 @@ class CreateTodoSublistAdapter(private val sublist: MutableList<String>) :
         ) {
 
         fun bind(itemPosition: Int) {
-            todoSubitemBinding.subItemEditText.setText(sublist[itemPosition])
+            todoSubitemBinding.subItemEditText.setText(sublist[itemPosition].item)
 
             // Focus on EditText and show the keyboard
             if (todoSubitemBinding.subItemEditText.requestFocus()) {

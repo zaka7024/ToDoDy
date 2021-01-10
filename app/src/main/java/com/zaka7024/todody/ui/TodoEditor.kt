@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zaka7024.todody.CreateTodoSublistAdapter
 import com.zaka7024.todody.R
+import com.zaka7024.todody.data.Subitem
 import com.zaka7024.todody.databinding.FragmentTodoEditorBinding
 
 class TodoEditor : Fragment(R.layout.fragment_todo_editor) {
@@ -19,11 +20,11 @@ class TodoEditor : Fragment(R.layout.fragment_todo_editor) {
         binding = FragmentTodoEditorBinding.bind(view)
         val args = TodoEditorArgs.fromBundle(requireArguments())
 
-        subitemAdapter = CreateTodoSublistAdapter(args.todo.subItems)
+        subitemAdapter = CreateTodoSublistAdapter(args.todo.subitems)
 
         binding.apply {
-            val todo = args.todo
-            todoEdittext.setText(todo.title)
+            val todoItem = args.todo
+            todoEdittext.setText(todoItem.todo.title)
 
             todoSublistRv.adapter = subitemAdapter
             todoSublistRv.layoutManager = LinearLayoutManager(

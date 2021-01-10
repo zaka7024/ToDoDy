@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Todo::class], version = 1)
+@Database(entities = [Todo::class, Subitem::class], version = 1)
 @TypeConverters(Converters::class)
 abstract class TodoDatabase: RoomDatabase() {
     abstract fun daysDao(): TodoDao

@@ -31,6 +31,6 @@
         tools:layout="@layout/fragment_todo_editor" >
         <argument
             android:name="todo"
-            app:argType="com.zaka7024.todody.data.Todo" />
+            app:argType="com.zaka7024.todody.data.TodosWithSubitems" />
     </fragment>
 </navigation>

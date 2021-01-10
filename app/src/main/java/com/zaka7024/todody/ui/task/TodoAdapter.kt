@@ -5,42 +5,43 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.zaka7024.todody.data.Todo
+import com.zaka7024.todody.data.TodosWithSubitems
 import com.zaka7024.todody.databinding.TodoItemBinding
 
 class TodoAdapter(
-    private val todos: MutableList<Todo>,
+    private val todos: MutableList<TodosWithSubitems>,
     private val onTodoHolderClickListener: OnTodoHolderClickListener? = null
 ) :
     RecyclerView.Adapter<TodoAdapter.TodoHolder>() {
 
     interface OnTodoHolderClickListener {
-        fun onClick(todo: Todo)
+        fun onClick(todoItem: TodosWithSubitems)
     }
 
     inner class TodoHolder(
         private val todoItemBinding: TodoItemBinding,
-        private val todos: MutableList<Todo>
+        private val todos: MutableList<TodosWithSubitems>
     ) :
         RecyclerView.ViewHolder(
             todoItemBinding.root
         ) {
 
         fun bind(itemPosition: Int) {
-            val todo = todos[itemPosition]
+            val todoItem = todos[itemPosition]
             todoItemBinding.apply {
-                todoText.text = todo.title
-                date.text = todo.date.toString()
+                todoText.text = todoItem.todo.title
+                date.text = todoItem.todo.date.toString()
             }
 
             todoItemBinding.root.setOnClickListener {
-                onTodoHolderClickListener?.onClick(todo)
+                onTodoHolderClickListener?.onClick(todoItem)
             }
 
             todoItemBinding.root.animate().translationYBy(20f)
 
-            if (todo.subItems.isNotEmpty()) {
-                todoItemBinding.hint.visibility = View.VISIBLE
-            }
+//            if (todo.subItems.isNotEmpty()) {
+//                todoItemBinding.hint.visibility = View.VISIBLE
+//            }
         }
     }
 

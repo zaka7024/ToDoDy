@@ -7,7 +7,10 @@ import androidx.room.*
 interface TodoDao {
 
     @Insert
-    fun insert(todo: Todo)
+    fun insert(todo: Todo): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertSubitems(vararg subitems: Subitem)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(todo: Todo)
@@ -15,4 +18,7 @@ interface TodoDao {
     @Query("select * from todos")
     fun getAllTodos(): LiveData<List<Todo>>
 
+    @Transaction
+    @Query("SELECT * FROM todos")
+    fun getTodosWithSubitems(): LiveData<List<TodosWithSubitems>>
 }
