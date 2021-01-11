@@ -1,15 +1,13 @@
 package com.zaka7024.todody
 
 import android.content.Context
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.recyclerview.widget.RecyclerView
 import com.zaka7024.todody.data.Subitem
 import com.zaka7024.todody.databinding.TodoSubitemBinding
@@ -18,11 +16,12 @@ import com.zaka7024.todody.databinding.TodoSubitemBinding
 class CreateTodoSublistAdapter(private val sublist: MutableList<Subitem>) :
     RecyclerView.Adapter<CreateTodoSublistAdapter.SubitemHolder>() {
 
-    var onSubitemClickListener: OnSubitemClickListener? = null
+    var onSubitemEventsListener: OnSubitemEventsListener? = null
 
-    interface OnSubitemClickListener {
+    interface OnSubitemEventsListener {
         fun onClickDelete(itemPosition: Int)
         fun onClickEnter()
+        fun onTextChange(itemPosition: Int, text: String)
     }
 
     inner class SubitemHolder(private val todoSubitemBinding: TodoSubitemBinding) :
@@ -43,15 +42,41 @@ class CreateTodoSublistAdapter(private val sublist: MutableList<Subitem>) :
                 )
             }
 
-            todoSubitemBinding.subItemEditText.setOnEditorActionListener { v, actionId, event ->
-                if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                    onSubitemClickListener?.onClickEnter()
+            todoSubitemBinding.apply {
+                subItemEditText.setOnEditorActionListener { v, actionId, event ->
+                    if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                        onSubitemEventsListener?.onClickEnter()
+                    }
+                    true
                 }
-                true
-            }
 
-            todoSubitemBinding.delete.setOnClickListener {
-                onSubitemClickListener?.onClickDelete(itemPosition)
+                subItemEditText.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
+
+                    }
+
+                    override fun onTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
+                        onSubitemEventsListener?.onTextChange(itemPosition, s.toString())
+                    }
+
+                    override fun afterTextChanged(s: Editable?) {
+
+                    }
+                })
+
+                delete.setOnClickListener {
+                    onSubitemEventsListener?.onClickDelete(itemPosition)
+                }
             }
         }
     }

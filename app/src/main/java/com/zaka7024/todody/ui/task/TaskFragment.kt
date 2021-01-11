@@ -38,7 +38,6 @@ import com.zaka7024.todody.data.Todo
 import com.zaka7024.todody.data.TodosWithSubitems
 import com.zaka7024.todody.databinding.CalendarDayLayoutBinding
 import com.zaka7024.todody.databinding.FragmentTaskBinding
-import com.zaka7024.todody.ui.calendar.CalendarFragment
 import com.zaka7024.todody.utils.WrapContentLinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.todo_calendar_layout.*
@@ -230,8 +229,8 @@ fun showCreateTodoDialog(
         val subTodoList = mutableListOf<Subitem>()
         val adapter = CreateTodoSublistAdapter(subTodoList)
 
-        adapter.onSubitemClickListener =
-            object : CreateTodoSublistAdapter.OnSubitemClickListener {
+        adapter.onSubitemEventsListener =
+            object : CreateTodoSublistAdapter.OnSubitemEventsListener {
                 override fun onClickDelete(itemPosition: Int) {
                     // Remove the subitem from the RecyclerView
                     subTodoList.removeAt(itemPosition)
@@ -244,6 +243,10 @@ fun showCreateTodoDialog(
                     subTodoList.add(Subitem(item = "Item ${subTodoList.size}"))
                     adapter.notifyItemInserted(subTodoList.size - 1)
                     sublistRecyclerView.scrollToPosition(subTodoList.size - 1)
+                }
+
+                override fun onTextChange(itemPosition: Int, text: String) {
+                    subTodoList[itemPosition].item = text
                 }
             }
 

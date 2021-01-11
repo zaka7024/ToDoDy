@@ -33,7 +33,7 @@ data class Subitem(
     @PrimaryKey(autoGenerate = true)
     val id: Long? = null,
     var todoOwnerId: Long? = null,
-    val item: String
+    var item: String
 ) : Parcelable
 
 data class CategoryWithTodos(
