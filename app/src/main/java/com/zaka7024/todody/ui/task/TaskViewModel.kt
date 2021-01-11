@@ -6,20 +6,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaka7024.todody.data.Category
-import com.zaka7024.todody.data.CategoryWithTodos
-import com.zaka7024.todody.data.Subitem
-import com.zaka7024.todody.data.Todo
+import com.zaka7024.todody.data.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 
 class TaskViewModel @ViewModelInject constructor(private val todoRepository: TodoRepository) :
     ViewModel() {
 
-    private var _userTodos = MutableLiveData<CategoryWithTodos>()
-    val userTodos: LiveData<CategoryWithTodos>
-        get() = _userTodos
+    private var _todayTodos = MutableLiveData<List<TodosWithSubitems>>()
+    val todayTodos: LiveData<List<TodosWithSubitems>>
+        get() = _todayTodos
+
+    private var _otherTodos = MutableLiveData<List<TodosWithSubitems>>()
+    val otherTodos: LiveData<List<TodosWithSubitems>>
+        get() = _otherTodos
 
     private var _categories = todoRepository.categories
     val categories: LiveData<List<Category>>
@@ -38,21 +40,39 @@ class TaskViewModel @ViewModelInject constructor(private val todoRepository: Tod
             }
         }
 
-        getTodos(_currentSelectedCategory.value?.categoryName ?: "Home")
+        getTodayTodos(1)
+        getOthersTodos(1)
     }
 
-    fun getTodos(categoryName: String) {
+    fun getTodayTodos(categoryId: Long) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val todos = todoRepository.getTodosWithinCategory(categoryName)
-                Log.i("taskViewModel", "todoRepository: ${todos}")
-                _userTodos.postValue(todos)
+                val todos = todoRepository.getTodosWithinCategoryAndDate(
+                    LocalDate.now(), categoryId
+                )
+                Log.i("taskViewModel", "todoRepository: $todos")
+                _todayTodos.postValue(todos)
+            }
+        }
+    }
+
+    fun getOthersTodos(categoryId: Long) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val todos = todoRepository.getTodosExceptDateWithinCategory(
+                    LocalDate.now(), categoryId
+                )
+                Log.i("taskViewModel", "todoRepository: $todos")
+                _otherTodos.postValue(todos)
             }
         }
     }
 
     fun saveTodo(todo: Todo, list: Array<Subitem>, categoryName: String) {
         viewModelScope.launch {
+            if (todo.date == null) {
+                todo.date = LocalDate.now()
+            }
             withContext(Dispatchers.IO) {
                 // get the t.odo category
                 val category = todoRepository.getCategoryByName(
@@ -65,7 +85,7 @@ class TaskViewModel @ViewModelInject constructor(private val todoRepository: Tod
                 todoRepository.insertSubitems(*list)
 
                 // Update the database to trigger the observer
-                getTodos(currentSelectedCategory.value?.categoryName ?: "Home")
+                getTodayTodos(1)
             }
         }
     }

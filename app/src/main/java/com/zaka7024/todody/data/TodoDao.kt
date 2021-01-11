@@ -38,6 +38,20 @@ interface TodoDao {
     fun getAllTodosWithinDate(localDate: LocalDate): List<TodosWithSubitems>
 
     @Transaction
+    @Query("SELECT * FROM todos where date = :localDate and categoryOwnerId=:categoryId")
+    fun getAllTodosWithinDateCategory(
+        localDate: LocalDate,
+        categoryId: Long
+    ): List<TodosWithSubitems>
+
+    @Transaction
+    @Query("SELECT * FROM todos where date <> :localDate and categoryOwnerId =:categoryId")
+    fun getAllTodosExceptDateWithinCategory(
+        localDate: LocalDate,
+        categoryId: Long
+    ): List<TodosWithSubitems>
+
+    @Transaction
     @Query("SELECT * FROM category where categoryName=:name")
     fun getAllTodosWithinCategory(name: String): CategoryWithTodos
 }

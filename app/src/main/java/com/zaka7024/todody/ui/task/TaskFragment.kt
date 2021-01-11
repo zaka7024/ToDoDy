@@ -17,6 +17,7 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -85,11 +86,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
         val todos = mutableListOf<TodosWithSubitems>()
         val categories = mutableListOf<Category>()
-
-        val otherTodos = mutableListOf(
-            Todo(title = "Hello, Other World"),
-            Todo(title = "Hello, Second World")
-        )
+        val otherTodos = mutableListOf<TodosWithSubitems>()
 
         todayTodoAdapter = TodoAdapter(todos, object : TodoAdapter.OnTodoHolderClickListener {
             override fun onClick(todoItem: TodosWithSubitems) {
@@ -101,14 +98,15 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
             }
         })
 
-        othersTodoAdapter = TodoAdapter(todos)
+        othersTodoAdapter = TodoAdapter(otherTodos)
 
         //
         categoryAdapter =
             CategoryAdapter(categories, object : CategoryAdapter.SetOnCategoryClickListener {
                 override fun onClick(category: Category) {
                     taskViewModel.setCurrentCategory(category)
-                    taskViewModel.getTodos(category.categoryName)
+                    taskViewModel.getTodayTodos(category.categoryId ?: 1)
+                    taskViewModel.getOthersTodos(category.categoryId ?: 1)
                     binding.categoryRv.adapter = categoryAdapter
                 }
             })
@@ -139,14 +137,24 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                 )
         }
 
-        // Get all todos form the selected category and notify the adapter
-        taskViewModel.userTodos.observe(viewLifecycleOwner, { userTodos ->
+        // Get all todos form the selected category for today and notify the adapter
+        taskViewModel.todayTodos.observe(viewLifecycleOwner, { userTodos ->
             Log.i("taskViewModel", "todos: $userTodos")
-            if (userTodos != null) {
-                todos.clear()
-                todos.addAll(userTodos.todos)
-                todayTodoAdapter.notifyDataSetChanged()
-            }
+            todos.clear()
+            todos.addAll(userTodos)
+            todayTodoAdapter.notifyDataSetChanged()
+
+            binding.todayNoTasksHint.isVisible = userTodos.isEmpty()
+        })
+
+        // Get all todos form the selected category for others days and notify the adapter
+        taskViewModel.otherTodos.observe(viewLifecycleOwner, { userOtherTodos ->
+            Log.i("taskViewModel", "userOtherTodos: $userOtherTodos")
+            otherTodos.clear()
+            otherTodos.addAll(userOtherTodos)
+            othersTodoAdapter.notifyDataSetChanged()
+
+            binding.otherNoTasksHint.isVisible = otherTodos.isEmpty()
         })
 
         //

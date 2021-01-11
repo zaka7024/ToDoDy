@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProviders
@@ -88,13 +89,14 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
         }
 
 
-        // get all todos
-        // Todo:: Get all todos in the selected date
+        // Get all todos in the selected date
         calendarViewModel.userTodos.observe(viewLifecycleOwner) {
             userTodos ->
             todos.clear()
             todos.addAll(userTodos)
             todoAdapter.notifyDataSetChanged()
+
+            binding.noTasksHint.isVisible = userTodos.isEmpty()
         }
 
         //

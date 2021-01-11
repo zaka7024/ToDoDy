@@ -13,6 +13,14 @@ class TodoRepository @Inject constructor(private val todoDao: TodoDao) {
         return todoDao.getAllTodosWithinCategory(categoryName)
     }
 
+    suspend fun getTodosWithinCategoryAndDate(localDate: LocalDate, categoryId: Long): List<TodosWithSubitems> {
+        return todoDao.getAllTodosWithinDateCategory(localDate, categoryId)
+    }
+
+    suspend fun getTodosExceptDateWithinCategory(localDate: LocalDate, categoryId: Long): List<TodosWithSubitems> {
+        return todoDao.getAllTodosExceptDateWithinCategory(localDate, categoryId)
+    }
+
     suspend fun getAllTodosWithinDate(localDate: LocalDate): List<TodosWithSubitems> {
         return todoDao.getAllTodosWithinDate(localDate)
     }

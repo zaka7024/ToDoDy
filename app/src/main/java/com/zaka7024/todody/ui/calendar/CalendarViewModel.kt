@@ -52,6 +52,9 @@ class CalendarViewModel @ViewModelInject constructor(
 
     fun saveTodo(todo: Todo, list: Array<Subitem>, categoryName: String) {
         viewModelScope.launch {
+            if (todo.date == null) {
+                todo.date = LocalDate.now()
+            }
             withContext(Dispatchers.IO) {
                 // get the t.odo category
                 val category = todoRepository.getCategoryByName(

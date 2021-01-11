@@ -55,7 +55,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/other_rv"
                 android:layout_width="0dp"
-                android:layout_height="329dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 app:layout_constraintEnd_toEndOf="@+id/today_rv"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -78,6 +78,34 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:itemCount="4"
                 tools:listitem="@layout/category_item" />
+
+            <TextView
+                android:id="@+id/today_no_tasks_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_tasks_for_today"
+                android:textColor="@color/primaryTextColor"
+                android:textSize="18sp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/today_rv"
+                app:layout_constraintEnd_toEndOf="@+id/today_rv"
+                app:layout_constraintStart_toStartOf="@+id/today_rv"
+                app:layout_constraintTop_toTopOf="@+id/today_rv"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/other_no_tasks_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_tasks_for_the_other_days"
+                android:textColor="@color/primaryTextColor"
+                android:textSize="18sp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/other_rv"
+                app:layout_constraintEnd_toEndOf="@+id/other_rv"
+                app:layout_constraintStart_toStartOf="@+id/other_rv"
+                app:layout_constraintTop_toTopOf="@+id/other_rv"
+                tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
