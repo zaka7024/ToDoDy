@@ -2,6 +2,7 @@ package com.zaka7024.todody.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import java.time.LocalDate
 
 @Dao
 interface TodoDao {
@@ -24,12 +25,17 @@ interface TodoDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(todo: Todo)
 
-    @Query("select * from todos")
-    fun getAllTodos(): LiveData<List<Todo>>
-
     @Transaction
     @Query("SELECT * FROM todos")
     fun getAllTodosWithSubitems(): LiveData<List<TodosWithSubitems>>
+
+    @Transaction
+    @Query("SELECT * FROM category")
+    fun getAllTodosCategory(): CategoryWithTodos
+
+    @Transaction
+    @Query("SELECT * FROM todos where date = :localDate")
+    fun getAllTodosWithinDate(localDate: LocalDate): List<TodosWithSubitems>
 
     @Transaction
     @Query("SELECT * FROM category where categoryName=:name")

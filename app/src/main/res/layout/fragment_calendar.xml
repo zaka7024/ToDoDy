@@ -65,7 +65,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/add_task"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/calendar_bg"
         app:layout_constraintStart_toStartOf="@+id/calendar_bg"
         app:layout_constraintTop_toBottomOf="@+id/calendar_bg"

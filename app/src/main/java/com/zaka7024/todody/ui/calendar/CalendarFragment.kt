@@ -6,6 +6,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kizitonwose.calendarview.model.CalendarDay
@@ -15,19 +16,22 @@ import com.kizitonwose.calendarview.ui.ViewContainer
 import com.zaka7024.todody.R
 import com.zaka7024.todody.data.Subitem
 import com.zaka7024.todody.data.Todo
+import com.zaka7024.todody.data.TodosWithSubitems
 import com.zaka7024.todody.databinding.CalendarDayLayoutBinding
 import com.zaka7024.todody.databinding.FragmentCalendarBinding
 import com.zaka7024.todody.ui.task.TaskFragment
 import com.zaka7024.todody.ui.task.TodoAdapter
 import com.zaka7024.todody.ui.task.showCreateTodoDialog
+import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.WeekFields
 import java.util.*
 
+@AndroidEntryPoint
 class CalendarFragment : Fragment(R.layout.fragment_calendar) {
     private lateinit var binding: FragmentCalendarBinding
-    private lateinit var calendarViewModel: CalendarViewModel
+    private val calendarViewModel by viewModels<CalendarViewModel>()
     private lateinit var todoAdapter: TodoAdapter
 
     class DayContainer(
@@ -53,20 +57,18 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //
-        calendarViewModel = ViewModelProviders.of(this).get(CalendarViewModel::class.java)
         binding = FragmentCalendarBinding.bind(view)
 
-        val todos = mutableListOf(Todo(title = "Hello, Again"))
-        //todoAdapter = TodoAdapter(todos)
+        val todos = mutableListOf<TodosWithSubitems>()
+        todoAdapter = TodoAdapter(todos)
 
         binding.apply {
-            // todosRv.adapter = todoAdapter
+            todosRv.adapter = todoAdapter
             todosRv.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         }
 
-        // test
+        // Add new t,odo to the database
         binding.addTask.setOnClickListener {
             showCreateTodoDialog(requireContext(), object : TaskFragment.TodoCreateListener {
                 override fun onSend(todo: Todo, subitems: List<Subitem>, categoryNmae: String) {
@@ -77,11 +79,22 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        todos.add(todo)
+                        //todos.add(todo)
+                        calendarViewModel.saveTodo(todo, subitems.toTypedArray(), categoryNmae)
                         todoAdapter.notifyItemInserted(todos.size - 1)
                     }
                 }
             })
+        }
+
+
+        // get all todos
+        // Todo:: Get all todos in the selected date
+        calendarViewModel.userTodos.observe(viewLifecycleOwner) {
+            userTodos ->
+            todos.clear()
+            todos.addAll(userTodos)
+            todoAdapter.notifyDataSetChanged()
         }
 
         //

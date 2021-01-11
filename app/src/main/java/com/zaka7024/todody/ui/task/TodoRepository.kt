@@ -2,6 +2,7 @@ package com.zaka7024.todody.ui.task
 
 import androidx.lifecycle.LiveData
 import com.zaka7024.todody.data.*
+import java.time.LocalDate
 import javax.inject.Inject
 
 class TodoRepository @Inject constructor(private val todoDao: TodoDao) {
@@ -10,6 +11,14 @@ class TodoRepository @Inject constructor(private val todoDao: TodoDao) {
 
     suspend fun getTodosWithinCategory(categoryName: String): CategoryWithTodos {
         return todoDao.getAllTodosWithinCategory(categoryName)
+    }
+
+    suspend fun getAllTodosWithinDate(localDate: LocalDate): List<TodosWithSubitems> {
+        return todoDao.getAllTodosWithinDate(localDate)
+    }
+
+    suspend fun getTodosCategory(): CategoryWithTodos {
+        return todoDao.getAllTodosCategory()
     }
 
     suspend fun insertTodo(todo: Todo): Long {

@@ -161,6 +161,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
         })
 
 
+        // Add new t,odo to the database
         binding.addTask.setOnClickListener {
             showCreateTodoDialog(requireContext(), object : TodoCreateListener {
                 override fun onSend(todo: Todo, subitems: List<Subitem>, categoryName: String) {
