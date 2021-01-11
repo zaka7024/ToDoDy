@@ -37,11 +37,13 @@ class TodoAdapter(
                 onTodoHolderClickListener?.onClick(todoItem)
             }
 
-            todoItemBinding.root.animate().translationYBy(20f)
+            val offset = 20f
+            todoItemBinding.root.translationY -= offset
+            todoItemBinding.root.animate().translationYBy(offset)
 
-//            if (todo.subItems.isNotEmpty()) {
-//                todoItemBinding.hint.visibility = View.VISIBLE
-//            }
+            if (todoItem.subitems.isNotEmpty()) {
+                todoItemBinding.hint.visibility = View.VISIBLE
+            }
         }
     }
 

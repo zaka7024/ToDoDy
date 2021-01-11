@@ -31,6 +31,7 @@ import com.kizitonwose.calendarview.ui.MonthScrollListener
 import com.kizitonwose.calendarview.ui.ViewContainer
 import com.zaka7024.todody.CreateTodoSublistAdapter
 import com.zaka7024.todody.R
+import com.zaka7024.todody.data.Category
 import com.zaka7024.todody.data.Subitem
 import com.zaka7024.todody.data.Todo
 import com.zaka7024.todody.data.TodosWithSubitems
@@ -49,6 +50,7 @@ import java.util.*
 class TaskFragment : Fragment(R.layout.fragment_task) {
     private lateinit var todayTodoAdapter: TodoAdapter
     private lateinit var othersTodoAdapter: TodoAdapter
+    private lateinit var categoryAdapter: CategoryAdapter
 
     private val taskViewModel by viewModels<TaskViewModel>()
 
@@ -82,6 +84,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
         val binding = FragmentTaskBinding.bind(view)
 
         val todos = mutableListOf<TodosWithSubitems>()
+        val categories = mutableListOf<Category>()
 
         val otherTodos = mutableListOf(
             Todo(title = "Hello, Other World"),
@@ -100,6 +103,16 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
         othersTodoAdapter = TodoAdapter(todos)
 
+        //
+        categoryAdapter =
+            CategoryAdapter(categories, object : CategoryAdapter.SetOnCategoryClickListener {
+                override fun onClick(category: Category) {
+                    taskViewModel.setCurrentCategory(category)
+                    taskViewModel.getTodos(category.categoryName)
+                    binding.categoryRv.adapter = categoryAdapter
+                }
+            })
+
         binding.apply {
             todayRv.adapter = todayTodoAdapter
             todayRv.layoutManager =
@@ -116,21 +129,41 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                     LinearLayoutManager.VERTICAL,
                     false
                 )
+
+            categoryRv.adapter = categoryAdapter
+            categoryRv.layoutManager =
+                WrapContentLinearLayoutManager(
+                    requireContext(),
+                    LinearLayoutManager.HORIZONTAL,
+                    false
+                )
         }
 
-        // test
+        // Get all todos form the selected category and notify the adapter
         taskViewModel.userTodos.observe(viewLifecycleOwner, { userTodos ->
             Log.i("taskViewModel", "todos: $userTodos")
-            val currentSize = todos.size
-            todos.clear()
-            todos.addAll(userTodos)
-            todayTodoAdapter.notifyItemRangeRemoved(0, currentSize)
-            todayTodoAdapter.notifyItemRangeInserted(0, todos.size)
+            if (userTodos != null) {
+                todos.clear()
+                todos.addAll(userTodos.todos)
+                todayTodoAdapter.notifyDataSetChanged()
+            }
         })
+
+        //
+        taskViewModel.categories.observe(viewLifecycleOwner, { userCategories ->
+            if (userCategories != null) {
+                Log.i("taskViewModel", "userCategories: ${userCategories.size}")
+                categoryAdapter.notifyItemRangeRemoved(0, categories.size)
+                categories.clear()
+                categories.addAll(userCategories)
+                categoryAdapter.notifyDataSetChanged()
+            }
+        })
+
 
         binding.addTask.setOnClickListener {
             showCreateTodoDialog(requireContext(), object : TodoCreateListener {
-                override fun onSend(todo: Todo, subitems: List<Subitem>) {
+                override fun onSend(todo: Todo, subitems: List<Subitem>, categoryName: String) {
                     if (todo.title.isEmpty()) {
                         Toast.makeText(
                             requireContext(),
@@ -138,7 +171,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        taskViewModel.saveTodo(todo, subitems.toTypedArray())
+                        taskViewModel.saveTodo(todo, subitems.toTypedArray(), categoryName)
                         todayTodoAdapter.notifyItemInserted(todos.size - 1)
                     }
                 }
@@ -147,7 +180,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
     }
 
     interface TodoCreateListener {
-        fun onSend(todo: Todo, subitems: List<Subitem>)
+        fun onSend(todo: Todo, subitems: List<Subitem>, categoryName: String)
     }
 
     interface CalendarEventsListener {
@@ -217,8 +250,10 @@ fun showCreateTodoDialog(
 
         // Category menu
         val todoCategoryButton = findViewById<TextView>(R.id.todo_category)
-        val categories = arrayOf("Work", "Home")
+        val categories = arrayOf("Home", "Work")
+        var selectedCategory = categories.first()
         todoCategoryButton.text = categories.first()
+
         todoCategoryButton.setOnClickListener {
             val popupMenu = PopupMenu(context, it)
             val menu = popupMenu.menu
@@ -234,6 +269,7 @@ fun showCreateTodoDialog(
                     todoCategoryButton.alpha = 0f
                     todoCategoryButton.animate().alpha(1f).duration = 400
                     todoCategoryButton.text = item.title
+                    selectedCategory = todoCategoryButton.text.toString()
                 }
                 true
             }
@@ -272,7 +308,8 @@ fun showCreateTodoDialog(
                     reminderTime = reminderTime?.time,
                     date = selectedDate
                 ),
-                subitems = subTodoList
+                subitems = subTodoList,
+                categoryName = selectedCategory
             )
             if (todoEditText.text.toString().isNotEmpty()) dismiss()
         }

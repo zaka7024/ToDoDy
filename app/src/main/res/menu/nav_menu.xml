@@ -2,27 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/drawer_item"
-        android:icon="@drawable/ic_baseline_menu_24"
-        android:enabled="true"
-        app:showAsAction="ifRoom"
-        android:title="" />
-    <item
         android:id="@+id/taskFragment"
-        android:icon="@drawable/ic_baseline_list_alt_24"
         android:enabled="true"
-        app:showAsAction="ifRoom"
-        android:title="Tasks" />
+        android:icon="@drawable/ic_baseline_list_alt_24"
+        android:title="Tasks"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/calendarFragment"
-        android:icon="@drawable/ic_baseline_today_24"
         android:enabled="true"
-        app:showAsAction="ifRoom"
-        android:title="Calendar" />
+        android:icon="@drawable/ic_baseline_today_24"
+        android:title="Calendar"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/mineFragment"
-        android:icon="@drawable/ic_baseline_person_24"
         android:enabled="true"
-        app:showAsAction="ifRoom"
-        android:title="Mine" />
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="Mine"
+        app:showAsAction="ifRoom" />
 </menu>

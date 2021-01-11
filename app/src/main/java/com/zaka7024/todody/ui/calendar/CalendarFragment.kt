@@ -61,7 +61,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
         //todoAdapter = TodoAdapter(todos)
 
         binding.apply {
-           // todosRv.adapter = todoAdapter
+            // todosRv.adapter = todoAdapter
             todosRv.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         }
@@ -69,7 +69,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
         // test
         binding.addTask.setOnClickListener {
             showCreateTodoDialog(requireContext(), object : TaskFragment.TodoCreateListener {
-                override fun onSend(todo: Todo, subitems: List<Subitem>) {
+                override fun onSend(todo: Todo, subitems: List<Subitem>, categoryNmae: String) {
                     if (todo.title.isEmpty()) {
                         Toast.makeText(
                             requireContext(),

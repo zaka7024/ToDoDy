@@ -9,6 +9,15 @@ interface TodoDao {
     @Insert
     fun insert(todo: Todo): Long
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insert(category: Category): Long
+
+    @Query("select * from category where categoryName=:name limit 1")
+    fun getCategory(name: String): Category
+
+    @Query("select * from category")
+    fun getAllCategory(): LiveData<List<Category>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertSubitems(vararg subitems: Subitem)
 
@@ -20,5 +29,9 @@ interface TodoDao {
 
     @Transaction
     @Query("SELECT * FROM todos")
-    fun getTodosWithSubitems(): LiveData<List<TodosWithSubitems>>
+    fun getAllTodosWithSubitems(): LiveData<List<TodosWithSubitems>>
+
+    @Transaction
+    @Query("SELECT * FROM category where categoryName=:name")
+    fun getAllTodosWithinCategory(name: String): CategoryWithTodos
 }
