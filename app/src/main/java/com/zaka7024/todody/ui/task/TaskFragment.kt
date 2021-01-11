@@ -23,6 +23,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
 import com.kizitonwose.calendarview.CalendarView
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
@@ -32,10 +33,7 @@ import com.kizitonwose.calendarview.ui.MonthScrollListener
 import com.kizitonwose.calendarview.ui.ViewContainer
 import com.zaka7024.todody.CreateTodoSublistAdapter
 import com.zaka7024.todody.R
-import com.zaka7024.todody.data.Category
-import com.zaka7024.todody.data.Subitem
-import com.zaka7024.todody.data.Todo
-import com.zaka7024.todody.data.TodosWithSubitems
+import com.zaka7024.todody.data.*
 import com.zaka7024.todody.databinding.CalendarDayLayoutBinding
 import com.zaka7024.todody.databinding.FragmentTaskBinding
 import com.zaka7024.todody.utils.WrapContentLinearLayoutManager
@@ -276,7 +274,7 @@ fun showCreateTodoDialog(
             }
             popupMenu.setOnMenuItemClickListener { item ->
                 if (item.itemId == R.id.add_category_item) {
-
+                    showCreateCategoryDialog(context)
                 } else {
                     todoCategoryButton.alpha = 0f
                     todoCategoryButton.animate().alpha(1f).duration = 400
@@ -564,6 +562,36 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
 
         threeDaysButton.setOnClickListener {
             selectCalendarDay(it, TaskFragment.CalendarSteps.ThreeDay)
+        }
+
+        show()
+    }
+}
+
+fun showCreateCategoryDialog(context: Context) {
+    val dialog = Dialog(context)
+
+    dialog.apply {
+        setContentView(R.layout.category_dialog)
+
+        val window = window!!
+        window.setLayout(
+            ConstraintLayout.LayoutParams.MATCH_PARENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val cancelButton = findViewById<TextView>(R.id.cancel)
+        cancelButton.setOnClickListener {
+            dismiss()
+        }
+
+        val saveButton = findViewById<TextView>(R.id.save)
+        saveButton.setOnClickListener {
+            val categoryText = findViewById<EditText>(R.id.category_name).text.toString()
+            TaskViewModel.saveCategory(context, categoryText) {
+                dismiss()
+            }
         }
 
         show()

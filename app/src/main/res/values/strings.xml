@@ -15,4 +15,7 @@
     <string name="add_sub_task">Add Sub-Task</string>
     <string name="no_tasks_for_today">No tasks for today</string>
     <string name="no_tasks_for_the_other_days">No tasks for the other days</string>
+    <string name="create_new_category">Create new category</string>
+    <string name="input_here">input here</string>
+    <string name="save">SAVE</string>
 </resources>

@@ -1,15 +1,15 @@
 package com.zaka7024.todody.ui.task
 
+import android.content.Context
 import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.Room
 import com.zaka7024.todody.data.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.time.LocalDate
 
 class TaskViewModel @ViewModelInject constructor(private val todoRepository: TodoRepository) :
@@ -92,5 +92,19 @@ class TaskViewModel @ViewModelInject constructor(private val todoRepository: Tod
 
     fun setCurrentCategory(category: Category) {
         _currentSelectedCategory.value = category
+    }
+
+    companion object {
+        fun saveCategory(context: Context, categoryName: String, onSuccess: ()-> Unit) {
+            GlobalScope.launch {
+                Room.databaseBuilder(
+                    context, TodoDatabase::class.java,
+                    "todos_database"
+                )
+                    .build()
+                    .daysDao().insert(Category(categoryName = categoryName))
+                onSuccess()
+            }
+        }
     }
 }
