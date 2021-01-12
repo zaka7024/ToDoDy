@@ -23,7 +23,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
 import com.kizitonwose.calendarview.CalendarView
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
@@ -33,14 +32,19 @@ import com.kizitonwose.calendarview.ui.MonthScrollListener
 import com.kizitonwose.calendarview.ui.ViewContainer
 import com.zaka7024.todody.CreateTodoSublistAdapter
 import com.zaka7024.todody.R
-import com.zaka7024.todody.data.*
+import com.zaka7024.todody.data.Category
+import com.zaka7024.todody.data.Subitem
+import com.zaka7024.todody.data.Todo
+import com.zaka7024.todody.data.TodosWithSubitems
 import com.zaka7024.todody.databinding.CalendarDayLayoutBinding
 import com.zaka7024.todody.databinding.FragmentTaskBinding
 import com.zaka7024.todody.utils.WrapContentLinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.todo_calendar_layout.*
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.YearMonth
+import java.time.ZoneId
 import java.time.temporal.WeekFields
 import java.util.*
 
@@ -201,6 +205,11 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
         fun onSelectDate(localDate: LocalDate)
     }
 
+    interface CategoryPopupEventListener {
+        fun onSelectCategory(categoryName: String)
+        fun onCategoryAddButtonClick()
+    }
+
     enum class CalendarSteps {
         Day, ThreeDay, Week
     }
@@ -271,25 +280,24 @@ fun showCreateTodoDialog(
         todoCategoryButton.text = categories.first()
 
         todoCategoryButton.setOnClickListener {
-            val popupMenu = PopupMenu(context, it)
-            val menu = popupMenu.menu
-            //TODO:: Add icon to the (New Category) Item
-            popupMenu.inflate(R.menu.category_menu)
-            for (category in categories) {
-                menu.add(category)
-            }
-            popupMenu.setOnMenuItemClickListener { item ->
-                if (item.itemId == R.id.add_category_item) {
-                    showCreateCategoryDialog(context, todoCreateListener)
-                } else {
-                    todoCategoryButton.alpha = 0f
-                    todoCategoryButton.animate().alpha(1f).duration = 400
-                    todoCategoryButton.text = item.title
-                    selectedCategory = todoCategoryButton.text.toString()
-                }
-                true
-            }
-            popupMenu.show()
+            showCategoryPopup(
+                context,
+                it,
+                categories.toList(),
+                object : TaskFragment.CategoryPopupEventListener {
+                    override fun onSelectCategory(categoryName: String) {
+                        selectedCategory = categoryName
+                        todoCategoryButton.alpha = 0f
+                        todoCategoryButton.animate().alpha(1f).duration = 400
+                        todoCategoryButton.text = categoryName
+                        selectedCategory = todoCategoryButton.text.toString()
+                    }
+
+                    override fun onCategoryAddButtonClick() {
+                        showCreateCategoryDialog(context, todoCreateListener)
+                    }
+
+                })
         }
 
         var time: Calendar? = null
@@ -381,6 +389,8 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
         val reminderButton = findViewById<TextView>(R.id.reminder)
         val todayButton = findViewById<TextView>(R.id.todayButton)
         val nextThreeButton = findViewById<TextView>(R.id.threeDaysButton)
+        val selectedTime = findViewById<TextView>(R.id.selectedTime)
+        val selectedReminder = findViewById<TextView>(R.id.selectedReminder)
 
         //
         calendarEventsListener.onSelectDate(currentSelectedDay)
@@ -493,6 +503,13 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
 
                     calendarEventsListener.onSelectTime(timeCalendar)
 
+                    //
+                    val timeString = "${timeCalendar.get(Calendar.HOUR_OF_DAY)}:${
+                        timeCalendar.get(Calendar.MINUTE)
+                    }"
+                    selectedTime.text = timeString
+
+
                 }, timeCalendar.get(Calendar.HOUR), timeCalendar.get(Calendar.MINUTE), true
             )
             timePickerDialog.show()
@@ -509,6 +526,11 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
                     reminderCalendar.set(Calendar.SECOND, 0)
 
                     calendarEventsListener.onSelectReminder(reminderCalendar)
+
+                    val timeString = "${reminderCalendar.get(Calendar.HOUR_OF_DAY)}:${
+                        reminderCalendar.get(Calendar.MINUTE)
+                    }"
+                    selectedReminder.text = timeString
 
                 }, reminderCalendar.get(Calendar.HOUR), reminderCalendar.get(Calendar.MINUTE), true
             )
@@ -572,6 +594,31 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
 
         show()
     }
+}
+
+fun showCategoryPopup(
+    context: Context,
+    anchor: View,
+    categories: List<String>,
+    categoryPopupEventListener: TaskFragment.CategoryPopupEventListener
+) {
+
+    val popupMenu = PopupMenu(context, anchor)
+    val menu = popupMenu.menu
+    //TODO:: Add icon to the (New Category) Item
+    popupMenu.inflate(R.menu.category_menu)
+    for (category in categories) {
+        menu.add(category)
+    }
+    popupMenu.setOnMenuItemClickListener { item ->
+        if (item.itemId == R.id.add_category_item) {
+            categoryPopupEventListener.onCategoryAddButtonClick()
+        } else {
+            categoryPopupEventListener.onSelectCategory(item.title.toString())
+        }
+        true
+    }
+    popupMenu.show()
 }
 
 fun showCreateCategoryDialog(

@@ -3,11 +3,17 @@ package com.zaka7024.todody.ui
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zaka7024.todody.CreateTodoSublistAdapter
 import com.zaka7024.todody.R
 import com.zaka7024.todody.data.Subitem
 import com.zaka7024.todody.databinding.FragmentTodoEditorBinding
+import com.zaka7024.todody.ui.task.TaskFragment
+import com.zaka7024.todody.ui.task.TaskViewModel
+import com.zaka7024.todody.ui.task.showCategoryPopup
 
 class TodoEditor : Fragment(R.layout.fragment_todo_editor) {
 
@@ -37,6 +43,24 @@ class TodoEditor : Fragment(R.layout.fragment_todo_editor) {
             addSubitem.setOnClickListener {
                 subitems.add(Subitem(item = "Item"))
                 subitemAdapter.notifyItemInserted(subitems.size - 1)
+            }
+
+            date.text = todoItem.todo.date.toString()
+
+            //
+            val categories = mutableListOf<String>()
+
+            category.setOnClickListener {
+                showCategoryPopup(requireContext(), it, categories,
+                    object : TaskFragment.CategoryPopupEventListener {
+                        override fun onSelectCategory(categoryName: String) {
+
+                        }
+
+                        override fun onCategoryAddButtonClick() {
+
+                        }
+                    })
             }
         }
     }
