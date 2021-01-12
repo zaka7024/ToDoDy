@@ -31,8 +31,8 @@ class CategoryAdapter(
                 categoryText.text = category.categoryName
 
                 val offset = 10f
-                root.translationY -= offset
-                root.animate().translationYBy(offset).duration = 400
+                //root.translationY -= offset
+                //root.animate().translationYBy(offset).duration = 400
 
                 if(position == currentSelectedIndex) {
                     categoryText.backgroundTintList = ResourcesCompat.getColorStateList(root.resources, R.color.primaryColor, null)

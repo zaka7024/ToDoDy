@@ -9,11 +9,10 @@
     <TextView
         android:id="@+id/categoryText"
         android:layout_width="wrap_content"
-        android:layout_height="80dp"
+        android:layout_height="60dp"
         android:background="@drawable/rounded"
         android:backgroundTint="@color/secondaryDarkColor"
         android:gravity="center"
-        android:padding="8dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:textColor="@color/primaryDarkColor"

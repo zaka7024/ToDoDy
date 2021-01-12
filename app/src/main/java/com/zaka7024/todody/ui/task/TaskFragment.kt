@@ -102,9 +102,10 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
             CategoryAdapter(categories, object : CategoryAdapter.SetOnCategoryClickListener {
                 override fun onClick(category: Category) {
                     taskViewModel.setCurrentCategory(category)
-                    taskViewModel.getTodayTodos(category.categoryId ?: 1)
-                    taskViewModel.getOthersTodos(category.categoryId ?: 1)
-                    binding.categoryRv.adapter = categoryAdapter
+                    binding.apply {
+                        categoryRv.adapter = categoryAdapter
+                        categoryRv.smoothScrollToPosition(categories.indexOf(category))
+                    }
                 }
             })
 
@@ -181,12 +182,17 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                         todayTodoAdapter.notifyItemInserted(todos.size - 1)
                     }
                 }
+
+                override fun onCreateCategory(categoryName: String) {
+                    taskViewModel.saveCategory(categoryName)
+                }
             })
         }
     }
 
     interface TodoCreateListener {
         fun onSend(todo: Todo, subitems: List<Subitem>, categoryName: String)
+        fun onCreateCategory(categoryName: String)
     }
 
     interface CalendarEventsListener {
@@ -274,7 +280,7 @@ fun showCreateTodoDialog(
             }
             popupMenu.setOnMenuItemClickListener { item ->
                 if (item.itemId == R.id.add_category_item) {
-                    showCreateCategoryDialog(context)
+                    showCreateCategoryDialog(context, todoCreateListener)
                 } else {
                     todoCategoryButton.alpha = 0f
                     todoCategoryButton.animate().alpha(1f).duration = 400
@@ -568,7 +574,11 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
     }
 }
 
-fun showCreateCategoryDialog(context: Context) {
+fun showCreateCategoryDialog(
+    context: Context,
+    todoCreateListener: TaskFragment.TodoCreateListener
+) {
+
     val dialog = Dialog(context)
 
     dialog.apply {
@@ -589,9 +599,8 @@ fun showCreateCategoryDialog(context: Context) {
         val saveButton = findViewById<TextView>(R.id.save)
         saveButton.setOnClickListener {
             val categoryText = findViewById<EditText>(R.id.category_name).text.toString()
-            TaskViewModel.saveCategory(context, categoryText) {
-                dismiss()
-            }
+            todoCreateListener.onCreateCategory(categoryText)
+            dismiss()
         }
 
         show()

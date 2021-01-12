@@ -85,25 +85,23 @@ class TaskViewModel @ViewModelInject constructor(private val todoRepository: Tod
                 todoRepository.insertSubitems(*list)
 
                 // Update the database to trigger the observer
-                getTodayTodos(1)
+                getTodayTodos(currentSelectedCategory.value?.categoryId ?: 1)
+                getOthersTodos(currentSelectedCategory.value?.categoryId ?: 1)
             }
         }
     }
 
     fun setCurrentCategory(category: Category) {
         _currentSelectedCategory.value = category
+        // Update the todos
+        getTodayTodos(category.categoryId ?: 1)
+        getOthersTodos(category.categoryId ?: 1)
     }
 
-    companion object {
-        fun saveCategory(context: Context, categoryName: String, onSuccess: ()-> Unit) {
-            GlobalScope.launch {
-                Room.databaseBuilder(
-                    context, TodoDatabase::class.java,
-                    "todos_database"
-                )
-                    .build()
-                    .daysDao().insert(Category(categoryName = categoryName))
-                onSuccess()
+    fun saveCategory(categoryName: String) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                todoRepository.insertCategory(Category(categoryName = categoryName))
             }
         }
     }
