@@ -85,6 +85,10 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
                         todoAdapter.notifyItemInserted(todos.size - 1)
                     }
                 }
+
+                override fun onCreateCategory(categoryName: String) {
+
+                }
             })
         }
 

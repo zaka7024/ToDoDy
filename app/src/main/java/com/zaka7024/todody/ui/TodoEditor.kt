@@ -20,7 +20,9 @@ class TodoEditor : Fragment(R.layout.fragment_todo_editor) {
         binding = FragmentTodoEditorBinding.bind(view)
         val args = TodoEditorArgs.fromBundle(requireArguments())
 
-        subitemAdapter = CreateTodoSublistAdapter(args.todo.subitems)
+        val subitems = args.todo.subitems
+
+        subitemAdapter = CreateTodoSublistAdapter(subitems)
 
         binding.apply {
             val todoItem = args.todo
@@ -31,6 +33,11 @@ class TodoEditor : Fragment(R.layout.fragment_todo_editor) {
                 requireContext(),
                 LinearLayoutManager.VERTICAL, false
             )
+
+            addSubitem.setOnClickListener {
+                subitems.add(Subitem(item = "Item"))
+                subitemAdapter.notifyItemInserted(subitems.size - 1)
+            }
         }
     }
 }

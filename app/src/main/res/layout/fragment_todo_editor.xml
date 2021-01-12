@@ -1,75 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.TodoEditor"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primaryLightColor">
 
-    <EditText
-        android:id="@+id/todo_edittext"
-        android:layout_width="0dp"
-        android:layout_height="64dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/rounded"
-        android:backgroundTint="@color/secondaryLightColor"
-        android:ems="10"
-        android:hint="@string/i_am_going_to"
-        android:inputType="textMultiLine"
-        android:maxHeight="60dp"
-        android:maxLines="2"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:textColor="@color/primaryTextColor"
-        android:textColorHint="@color/primaryLightColor"
-        android:textStyle="normal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/category"
-        app:layout_constraintTop_toBottomOf="@+id/category" />
-
-    <TextView
-        android:id="@+id/category"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/rounded"
-        android:backgroundTint="@color/secondaryDarkColor"
-        android:gravity="center"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:text="@string/new_category"
-        android:textAlignment="center"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/todo_sublist_rv"
-        android:layout_width="0dp"
-        android:layout_height="250dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/todo_edittext"
-        app:layout_constraintStart_toStartOf="@+id/todo_edittext"
-        app:layout_constraintTop_toBottomOf="@+id/todo_edittext"
-        tools:itemCount="3"
-        tools:listitem="@layout/todo_subitem" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/transparent_bg"
-        android:drawableStart="@drawable/ic_baseline_add_24"
-        android:gravity="start|center_vertical"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:drawablePadding="4dp"
-        android:text="@string/add_sub_task"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/todo_sublist_rv" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        tools:context=".ui.TodoEditor">
+
+        <EditText
+            android:id="@+id/todo_edittext"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:autofillHints=""
+            android:background="@drawable/rounded"
+            android:backgroundTint="@color/secondaryLightColor"
+            android:ems="10"
+            android:hint="@string/i_am_going_to"
+            android:inputType="textMultiLine"
+            android:maxHeight="60dp"
+            android:maxLines="2"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/primaryTextColor"
+            android:textColorHint="@color/primaryLightColor"
+            android:textStyle="normal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/category"
+            app:layout_constraintTop_toBottomOf="@+id/category" />
+
+        <TextView
+            android:id="@+id/category"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rounded"
+            android:backgroundTint="@color/secondaryLightColor"
+            android:gravity="center"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@string/new_category"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/todo_sublist_rv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="@+id/todo_edittext"
+            app:layout_constraintStart_toStartOf="@+id/todo_edittext"
+            app:layout_constraintTop_toBottomOf="@+id/todo_edittext"
+            tools:itemCount="3"
+            tools:listitem="@layout/todo_subitem" />
+
+        <Button
+            android:id="@+id/add_subitem"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/transparent_bg"
+            android:drawableStart="@drawable/ic_baseline_add_24"
+            android:drawablePadding="8dp"
+            android:gravity="start|center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="8dp"
+            android:text="@string/add_sub_task"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/todo_sublist_rv" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/secondaryLightColor"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/add_subitem" />
+
+        <ImageView
+            android:id="@+id/date_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_baseline_calendar_today_24"
+            app:layout_constraintStart_toStartOf="@+id/textView3"
+            app:layout_constraintTop_toBottomOf="@+id/textView3"
+            app:tint="@color/secondaryDarkColor" />
+
+        <TextView
+            android:id="@+id/date_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/date_and_reminder"
+            android:textColor="@color/secondaryDarkColor"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/date_icon"
+            app:layout_constraintStart_toEndOf="@+id/date_icon"
+            app:layout_constraintTop_toTopOf="@+id/date_icon" />
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rounded"
+            android:backgroundTint="@color/secondaryLightColor"
+            android:drawablePadding="8dp"
+            android:gravity="center"
+            android:padding="4dp"
+            app:drawableStartCompat="@drawable/ic_baseline_access_time_24"
+            app:drawableTint="@color/secondaryDarkColor"
+            app:layout_constraintStart_toStartOf="@+id/date_icon"
+            app:layout_constraintTop_toBottomOf="@+id/date_title"
+            tools:text="2021/01/12 07:45" />
+
+        <TextView
+            android:id="@+id/reminder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/rounded"
+            android:backgroundTint="@color/secondaryLightColor"
+            android:drawablePadding="8dp"
+            android:gravity="center"
+            android:padding="4dp"
+            app:drawableStartCompat="@drawable/ic_baseline_add_alert_24"
+            app:drawableTint="@color/secondaryDarkColor"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/date"
+            app:layout_constraintTop_toBottomOf="@+id/date"
+            tools:text="2021/01/12 07:45" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
