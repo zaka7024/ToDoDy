@@ -6,10 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaka7024.todody.data.CategoryWithTodos
-import com.zaka7024.todody.data.Subitem
-import com.zaka7024.todody.data.Todo
-import com.zaka7024.todody.data.TodosWithSubitems
+import com.zaka7024.todody.data.*
 import com.zaka7024.todody.ui.task.TodoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +16,10 @@ import java.time.LocalDate
 class CalendarViewModel @ViewModelInject constructor(
     private val todoRepository: TodoRepository
 ) : ViewModel() {
+
+    private var _categories = todoRepository.categories
+    val categories: LiveData<List<Category>>
+        get() = _categories
 
     private val _currentSelectedDay = MutableLiveData<LocalDate>()
     val currentSelectedDay: LiveData<LocalDate>

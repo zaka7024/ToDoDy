@@ -70,33 +70,36 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         }
 
-        // Add new t,odo to the database
-        binding.addTask.setOnClickListener {
-            showCreateTodoDialog(requireContext(), lifecycleScope, object : TaskFragment.TodoCreateListener {
-                override fun onSend(todo: Todo, subitems: List<Subitem>, categoryNmae: String) {
-                    if (todo.title.isEmpty()) {
-                        Toast.makeText(
-                            requireContext(),
-                            "Please enter some thing",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        //todos.add(todo)
-                        calendarViewModel.saveTodo(todo, subitems.toTypedArray(), categoryNmae)
-                        todoAdapter.notifyItemInserted(todos.size - 1)
-                    }
-                }
+        calendarViewModel.categories.observe(viewLifecycleOwner, { userCategories ->
+            // Add new t,odo to the database
+            binding.addTask.setOnClickListener {
+                showCreateTodoDialog(
+                    requireContext(),
+                    userCategories,
+                    object : TaskFragment.TodoCreateListener {
+                        override fun onSend(todo: Todo, subitems: List<Subitem>, categoryNmae: String) {
+                            if (todo.title.isEmpty()) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Please enter some thing",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                //todos.add(todo)
+                                calendarViewModel.saveTodo(todo, subitems.toTypedArray(), categoryNmae)
+                                todoAdapter.notifyItemInserted(todos.size - 1)
+                            }
+                        }
 
-                override fun onCreateCategory(categoryName: String) {
+                        override fun onCreateCategory(categoryName: String) {
 
-                }
-            })
-        }
-
+                        }
+                    })
+            }
+        })
 
         // Get all todos in the selected date
-        calendarViewModel.userTodos.observe(viewLifecycleOwner) {
-            userTodos ->
+        calendarViewModel.userTodos.observe(viewLifecycleOwner) { userTodos ->
             todos.clear()
             todos.addAll(userTodos)
             todoAdapter.notifyDataSetChanged()

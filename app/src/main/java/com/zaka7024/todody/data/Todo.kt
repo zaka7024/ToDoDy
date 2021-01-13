@@ -24,7 +24,8 @@ data class Todo(
     val title: String,
     var date: LocalDate? = null,
     var time: Date? = null,
-    var reminderTime: Date? = null
+    var reminderTime: Date? = null,
+    var completed: Boolean = false
 ) : Parcelable
 
 @Entity

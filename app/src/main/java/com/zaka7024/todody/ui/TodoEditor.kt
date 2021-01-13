@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zaka7024.todody.CreateTodoSublistAdapter
 import com.zaka7024.todody.R
+import com.zaka7024.todody.data.Category
 import com.zaka7024.todody.data.Subitem
 import com.zaka7024.todody.databinding.FragmentTodoEditorBinding
 import com.zaka7024.todody.ui.task.TaskFragment
@@ -50,11 +51,11 @@ class TodoEditor : Fragment(R.layout.fragment_todo_editor) {
             date.text = "${todoItem.todo.date.toString()}:${todoItem.todo.time.toString()}"
             reminder.text = todoItem.todo.reminderTime.toString()
             //
-            val categories = mutableListOf<String>()
+            val categories = mutableListOf<Category>()
 
             category.setOnClickListener {
                 GlobalScope.launch {
-                    showCategoryPopup(requireContext(), it,
+                    showCategoryPopup(requireContext(),categories, it,
                         object : TaskFragment.CategoryPopupEventListener {
                             override fun onSelectCategory(categoryName: String) {
 

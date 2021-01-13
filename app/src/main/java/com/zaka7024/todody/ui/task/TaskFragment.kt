@@ -44,13 +44,10 @@ import com.zaka7024.todody.utils.WrapContentLinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.todo_calendar_layout.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.YearMonth
-import java.time.ZoneId
 import java.time.temporal.WeekFields
 import java.util.*
 
@@ -95,13 +92,17 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
         val categories = mutableListOf<Category>()
         val otherTodos = mutableListOf<TodosWithSubitems>()
 
-        todayTodoAdapter = TodoAdapter(todos, object : TodoAdapter.OnTodoHolderClickListener {
+        todayTodoAdapter = TodoAdapter(todos, object : TodoAdapter.OnTodoHolderEventsListener {
             override fun onClick(todoItem: TodosWithSubitems) {
                 findNavController().navigate(
                     TaskFragmentDirections.actionTaskFragmentToTodoEditor2(
                         todoItem
                     )
                 )
+            }
+
+            override fun onCompleteTodo(todoItem: TodosWithSubitems) {
+
             }
         })
 
@@ -173,31 +174,41 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                 categories.clear()
                 categories.addAll(userCategories)
                 categoryAdapter.notifyDataSetChanged()
+
+                // Add new t,odo to the database
+                binding.addTask.setOnClickListener {
+                    showCreateTodoDialog(
+                        requireContext(),
+                        userCategories,
+                        object : TodoCreateListener {
+                            override fun onSend(
+                                todo: Todo,
+                                subitems: List<Subitem>,
+                                categoryName: String
+                            ) {
+                                if (todo.title.isEmpty()) {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Please enter some thing",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    taskViewModel.saveTodo(
+                                        todo,
+                                        subitems.toTypedArray(),
+                                        categoryName
+                                    )
+                                    todayTodoAdapter.notifyItemInserted(todos.size - 1)
+                                }
+                            }
+
+                            override fun onCreateCategory(categoryName: String) {
+                                taskViewModel.saveCategory(categoryName)
+                            }
+                        })
+                }
             }
         })
-
-
-        // Add new t,odo to the database
-        binding.addTask.setOnClickListener {
-            showCreateTodoDialog(requireContext(), lifecycleScope, object : TodoCreateListener {
-                override fun onSend(todo: Todo, subitems: List<Subitem>, categoryName: String) {
-                    if (todo.title.isEmpty()) {
-                        Toast.makeText(
-                            requireContext(),
-                            "Please enter some thing",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        taskViewModel.saveTodo(todo, subitems.toTypedArray(), categoryName)
-                        todayTodoAdapter.notifyItemInserted(todos.size - 1)
-                    }
-                }
-
-                override fun onCreateCategory(categoryName: String) {
-                    taskViewModel.saveCategory(categoryName)
-                }
-            })
-        }
     }
 
     interface TodoCreateListener {
@@ -213,7 +224,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
     interface CategoryPopupEventListener {
         fun onSelectCategory(categoryName: String)
-        fun onCategoryAddButtonClick()
+        fun onCategoryAddButtonClick(popupMenu: PopupMenu)
     }
 
     enum class CalendarSteps {
@@ -223,7 +234,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
 fun showCreateTodoDialog(
     context: Context,
-    scope: LifecycleCoroutineScope,
+    categories: List<Category>,
     todoCreateListener: TaskFragment.TodoCreateListener
 ) {
 
@@ -286,25 +297,23 @@ fun showCreateTodoDialog(
         todoCategoryButton.text = selectedCategory
 
         todoCategoryButton.setOnClickListener {
-            scope.launch {
-                showCategoryPopup(
-                    context,
-                    it,
-                    object : TaskFragment.CategoryPopupEventListener {
-                        override fun onSelectCategory(categoryName: String) {
-                            selectedCategory = categoryName
-                            todoCategoryButton.alpha = 0f
-                            todoCategoryButton.animate().alpha(1f).duration = 400
-                            todoCategoryButton.text = categoryName
-                            selectedCategory = todoCategoryButton.text.toString()
-                        }
+            showCategoryPopup(
+                context,
+                categories,
+                it,
+                object : TaskFragment.CategoryPopupEventListener {
+                    override fun onSelectCategory(categoryName: String) {
+                        selectedCategory = categoryName
+                        todoCategoryButton.alpha = 0f
+                        todoCategoryButton.animate().alpha(1f).duration = 400
+                        todoCategoryButton.text = categoryName
+                        selectedCategory = todoCategoryButton.text.toString()
+                    }
 
-                        override fun onCategoryAddButtonClick() {
-                            showCreateCategoryDialog(context, todoCreateListener)
-                        }
-
-                    })
-            }
+                    override fun onCategoryAddButtonClick(popupMenu: PopupMenu) {
+                        showCreateCategoryDialog(context, popupMenu, todoCreateListener)
+                    }
+                })
         }
 
         var time: Calendar? = null
@@ -603,14 +612,12 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
     }
 }
 
-suspend fun showCategoryPopup(
+fun showCategoryPopup(
     context: Context,
+    categories: List<Category>,
     anchor: View,
     categoryPopupEventListener: TaskFragment.CategoryPopupEventListener
 ) {
-    val categories = withContext(Dispatchers.IO) {
-         TaskViewModel.getAllCategories(context)
-    }
 
     val popupMenu = PopupMenu(context, anchor)
     val menu = popupMenu.menu
@@ -621,7 +628,7 @@ suspend fun showCategoryPopup(
     }
     popupMenu.setOnMenuItemClickListener { item ->
         if (item.itemId == R.id.add_category_item) {
-            categoryPopupEventListener.onCategoryAddButtonClick()
+            categoryPopupEventListener.onCategoryAddButtonClick(popupMenu)
         } else {
             categoryPopupEventListener.onSelectCategory(item.title.toString())
         }
@@ -632,6 +639,7 @@ suspend fun showCategoryPopup(
 
 fun showCreateCategoryDialog(
     context: Context,
+    popupMenu: PopupMenu,
     todoCreateListener: TaskFragment.TodoCreateListener
 ) {
 
@@ -656,6 +664,11 @@ fun showCreateCategoryDialog(
         saveButton.setOnClickListener {
             val categoryText = findViewById<EditText>(R.id.category_name).text.toString()
             todoCreateListener.onCreateCategory(categoryText)
+            // Add the new item
+            popupMenu.menu.add(categoryText)
+            popupMenu.dismiss()
+            popupMenu.show()
+
             dismiss()
         }
 
