@@ -19,6 +19,9 @@ interface TodoDao {
     @Query("select * from category")
     fun getAllCategory(): LiveData<List<Category>>
 
+    @Query("select * from category")
+    fun getAllCategories(): List<Category>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertSubitems(vararg subitems: Subitem)
 

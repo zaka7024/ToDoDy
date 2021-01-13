@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.DayOwner
@@ -71,7 +72,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
 
         // Add new t,odo to the database
         binding.addTask.setOnClickListener {
-            showCreateTodoDialog(requireContext(), object : TaskFragment.TodoCreateListener {
+            showCreateTodoDialog(requireContext(), lifecycleScope, object : TaskFragment.TodoCreateListener {
                 override fun onSend(todo: Todo, subitems: List<Subitem>, categoryNmae: String) {
                     if (todo.title.isEmpty()) {
                         Toast.makeText(

@@ -105,4 +105,12 @@ class TaskViewModel @ViewModelInject constructor(private val todoRepository: Tod
             }
         }
     }
+
+    companion object {
+        fun getAllCategories(context: Context): List<Category> {
+            return Room.databaseBuilder(context, TodoDatabase::class.java,
+                "todos_database")
+                .build().daysDao().getAllCategories()
+        }
+    }
 }

@@ -20,6 +20,8 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -41,6 +43,10 @@ import com.zaka7024.todody.databinding.FragmentTaskBinding
 import com.zaka7024.todody.utils.WrapContentLinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.todo_calendar_layout.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
@@ -173,7 +179,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
         // Add new t,odo to the database
         binding.addTask.setOnClickListener {
-            showCreateTodoDialog(requireContext(), object : TodoCreateListener {
+            showCreateTodoDialog(requireContext(), lifecycleScope, object : TodoCreateListener {
                 override fun onSend(todo: Todo, subitems: List<Subitem>, categoryName: String) {
                     if (todo.title.isEmpty()) {
                         Toast.makeText(
@@ -217,6 +223,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
 fun showCreateTodoDialog(
     context: Context,
+    scope: LifecycleCoroutineScope,
     todoCreateListener: TaskFragment.TodoCreateListener
 ) {
 
@@ -275,29 +282,29 @@ fun showCreateTodoDialog(
 
         // Category menu
         val todoCategoryButton = findViewById<TextView>(R.id.todo_category)
-        val categories = arrayOf("Home", "Work")
-        var selectedCategory = categories.first()
-        todoCategoryButton.text = categories.first()
+        var selectedCategory = "Home"
+        todoCategoryButton.text = selectedCategory
 
         todoCategoryButton.setOnClickListener {
-            showCategoryPopup(
-                context,
-                it,
-                categories.toList(),
-                object : TaskFragment.CategoryPopupEventListener {
-                    override fun onSelectCategory(categoryName: String) {
-                        selectedCategory = categoryName
-                        todoCategoryButton.alpha = 0f
-                        todoCategoryButton.animate().alpha(1f).duration = 400
-                        todoCategoryButton.text = categoryName
-                        selectedCategory = todoCategoryButton.text.toString()
-                    }
+            scope.launch {
+                showCategoryPopup(
+                    context,
+                    it,
+                    object : TaskFragment.CategoryPopupEventListener {
+                        override fun onSelectCategory(categoryName: String) {
+                            selectedCategory = categoryName
+                            todoCategoryButton.alpha = 0f
+                            todoCategoryButton.animate().alpha(1f).duration = 400
+                            todoCategoryButton.text = categoryName
+                            selectedCategory = todoCategoryButton.text.toString()
+                        }
 
-                    override fun onCategoryAddButtonClick() {
-                        showCreateCategoryDialog(context, todoCreateListener)
-                    }
+                        override fun onCategoryAddButtonClick() {
+                            showCreateCategoryDialog(context, todoCreateListener)
+                        }
 
-                })
+                    })
+            }
         }
 
         var time: Calendar? = null
@@ -330,7 +337,7 @@ fun showCreateTodoDialog(
                     title = todoEditText.text.toString(),
                     time = time?.time,
                     reminderTime = reminderTime?.time,
-                    date = selectedDate
+                    date = selectedDate,
                 ),
                 subitems = subTodoList,
                 categoryName = selectedCategory
@@ -596,19 +603,21 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
     }
 }
 
-fun showCategoryPopup(
+suspend fun showCategoryPopup(
     context: Context,
     anchor: View,
-    categories: List<String>,
     categoryPopupEventListener: TaskFragment.CategoryPopupEventListener
 ) {
+    val categories = withContext(Dispatchers.IO) {
+         TaskViewModel.getAllCategories(context)
+    }
 
     val popupMenu = PopupMenu(context, anchor)
     val menu = popupMenu.menu
     //TODO:: Add icon to the (New Category) Item
     popupMenu.inflate(R.menu.category_menu)
     for (category in categories) {
-        menu.add(category)
+        menu.add(category.categoryName)
     }
     popupMenu.setOnMenuItemClickListener { item ->
         if (item.itemId == R.id.add_category_item) {
