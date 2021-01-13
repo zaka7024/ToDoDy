@@ -19,4 +19,6 @@
     <string name="input_here">input here</string>
     <string name="save">SAVE</string>
     <string name="date_and_reminder">Date and Reminder</string>
+    <string name="completed_tasks">Completed Tasks</string>
+    <string name="pending_tasks">Pending Tasks</string>
 </resources>

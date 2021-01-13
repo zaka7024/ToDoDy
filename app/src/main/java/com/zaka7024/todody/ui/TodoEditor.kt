@@ -2,6 +2,7 @@ package com.zaka7024.todody.ui
 
 import android.os.Bundle
 import android.view.View
+import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -61,7 +62,7 @@ class TodoEditor : Fragment(R.layout.fragment_todo_editor) {
 
                             }
 
-                            override fun onCategoryAddButtonClick() {
+                            override fun onCategoryAddButtonClick(popupMenu: PopupMenu) {
 
                             }
                         })

@@ -50,4 +50,5 @@ ext {
     room_version = "2.2.5"
     datastore_preferences_version = "1.0.0"
     CalendarViewVersion = "1.0.1"
+    roundView = "2.3.0"
 }
