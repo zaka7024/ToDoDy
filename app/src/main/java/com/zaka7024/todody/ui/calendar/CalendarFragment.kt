@@ -94,7 +94,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
                         override fun onCreateCategory(categoryName: String) {
 
                         }
-                    })
+                    }, calendarViewModel.currentSelectedDay.value)
             }
         })
 

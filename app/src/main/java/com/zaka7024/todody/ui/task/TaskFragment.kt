@@ -231,7 +231,8 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 fun showCreateTodoDialog(
     context: Context,
     categories: List<Category>,
-    todoCreateListener: TaskFragment.TodoCreateListener
+    todoCreateListener: TaskFragment.TodoCreateListener,
+    defaultDate: LocalDate? = null
 ) {
 
     val dialog = Dialog(context)
@@ -335,7 +336,7 @@ fun showCreateTodoDialog(
                 override fun onSelectDate(localDate: LocalDate) {
                     selectedDate = localDate
                 }
-            })
+            }, defaultDate)
         }
 
         // Send the todo
@@ -378,7 +379,8 @@ fun showCreateTodoDialog(
     }
 }
 
-fun showCalendar(context: Context, calendarEventsListener: TaskFragment.CalendarEventsListener) {
+fun showCalendar(context: Context, calendarEventsListener: TaskFragment.CalendarEventsListener
+, defaultDate: LocalDate? = null) {
 
     val dialog = Dialog(context)
     dialog.apply {
@@ -393,7 +395,7 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
 
         val today = LocalDate.now()
         val todayMonth = YearMonth.now()
-        var currentSelectedDay = today
+        var currentSelectedDay = defaultDate ?: today
         var currentMonth = todayMonth
         val monthsToAdd = 12L
         val lastMonth = currentMonth.plusMonths(monthsToAdd)
