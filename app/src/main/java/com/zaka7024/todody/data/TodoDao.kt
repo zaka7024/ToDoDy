@@ -28,6 +28,12 @@ interface TodoDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(todo: Todo)
 
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    fun update(subitems: List<Subitem>)
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    fun update(subitem: Subitem)
+
     @Transaction
     @Query("SELECT * FROM todos")
     fun getAllTodosWithSubitems(): LiveData<List<TodosWithSubitems>>

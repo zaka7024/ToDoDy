@@ -26,7 +26,7 @@
     </fragment>
     <fragment
         android:id="@+id/todoEditor"
-        android:name="com.zaka7024.todody.ui.editor.TodoEditor"
+        android:name="com.zaka7024.todody.ui.editor.TodoEditorFragment"
         android:label="fragment_todo_editor"
         tools:layout="@layout/fragment_todo_editor" >
         <argument

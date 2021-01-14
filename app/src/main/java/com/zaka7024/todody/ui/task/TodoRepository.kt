@@ -48,4 +48,12 @@ class TodoRepository @Inject constructor(private val todoDao: TodoDao) {
     suspend fun updateTodo(todo: Todo) {
         todoDao.update(todo)
     }
+
+    suspend fun updateSubitems(todosWithSubitems: TodosWithSubitems) {
+        todoDao.update(todosWithSubitems.subitems)
+    }
+
+    suspend fun updateSubitem(subitem: Subitem) {
+        todoDao.update(subitem)
+    }
 }

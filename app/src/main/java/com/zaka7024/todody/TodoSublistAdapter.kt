@@ -88,6 +88,7 @@ class TodoSublistAdapter(private val sublist: MutableList<Subitem>) :
                 //
                 circle.setOnClickListener {
                     styleAsDone()
+                    subitem.completed = true
                     onSubitemEventsListener?.onComplete(subitem)
                 }
             }

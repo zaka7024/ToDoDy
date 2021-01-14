@@ -4,28 +4,31 @@ import android.os.Bundle
 import android.view.View
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zaka7024.todody.TodoSublistAdapter
 import com.zaka7024.todody.R
 import com.zaka7024.todody.data.Category
 import com.zaka7024.todody.data.Subitem
 import com.zaka7024.todody.databinding.FragmentTodoEditorBinding
-import com.zaka7024.todody.ui.TodoEditorArgs
 import com.zaka7024.todody.ui.task.TaskFragment
 import com.zaka7024.todody.ui.task.showCategoryPopup
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class TodoEditor : Fragment(R.layout.fragment_todo_editor) {
+@AndroidEntryPoint
+class TodoEditorFragment : Fragment(R.layout.fragment_todo_editor) {
 
     private lateinit var binding: FragmentTodoEditorBinding
     private lateinit var subitemAdapter: TodoSublistAdapter
+    private val editorViewModel by viewModels<EditorViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentTodoEditorBinding.bind(view)
-        val args = TodoEditorArgs.fromBundle(requireArguments())
+        val args = TodoEditorFragmentArgs.fromBundle(requireArguments())
 
         val subitems = args.todo.subitems
 
@@ -44,7 +47,7 @@ class TodoEditor : Fragment(R.layout.fragment_todo_editor) {
             }
 
             override fun onComplete(subitem: Subitem) {
-
+                editorViewModel.updateSubitem(subitem)
             }
         }
 
