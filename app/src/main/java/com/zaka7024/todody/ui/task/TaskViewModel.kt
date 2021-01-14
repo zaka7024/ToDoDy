@@ -44,7 +44,7 @@ class TaskViewModel @ViewModelInject constructor(private val todoRepository: Tod
         getOthersTodos(1)
     }
 
-    fun getTodayTodos(categoryId: Long) {
+    private fun getTodayTodos(categoryId: Long) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val todos = todoRepository.getTodosWithinCategoryAndDate(
@@ -56,7 +56,7 @@ class TaskViewModel @ViewModelInject constructor(private val todoRepository: Tod
         }
     }
 
-    fun getOthersTodos(categoryId: Long) {
+    private fun getOthersTodos(categoryId: Long) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val todos = todoRepository.getTodosExceptDateWithinCategory(
@@ -106,11 +106,11 @@ class TaskViewModel @ViewModelInject constructor(private val todoRepository: Tod
         }
     }
 
-    companion object {
-        fun getAllCategories(context: Context): List<Category> {
-            return Room.databaseBuilder(context, TodoDatabase::class.java,
-                "todos_database")
-                .build().daysDao().getAllCategories()
+    fun updateTodo(todo: Todo) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                todoRepository.updateTodo(todo)
+            }
         }
     }
 }

@@ -34,7 +34,8 @@ data class Subitem(
     @PrimaryKey(autoGenerate = true)
     val id: Long? = null,
     var todoOwnerId: Long? = null,
-    var item: String
+    var item: String,
+    var completed: Boolean = false
 ) : Parcelable
 
 data class CategoryWithTodos(

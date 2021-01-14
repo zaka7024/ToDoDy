@@ -20,8 +20,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,7 +30,7 @@ import com.kizitonwose.calendarview.model.DayOwner
 import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.MonthScrollListener
 import com.kizitonwose.calendarview.ui.ViewContainer
-import com.zaka7024.todody.CreateTodoSublistAdapter
+import com.zaka7024.todody.TodoSublistAdapter
 import com.zaka7024.todody.R
 import com.zaka7024.todody.data.Category
 import com.zaka7024.todody.data.Subitem
@@ -43,9 +41,6 @@ import com.zaka7024.todody.databinding.FragmentTaskBinding
 import com.zaka7024.todody.utils.WrapContentLinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.todo_calendar_layout.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.WeekFields
@@ -102,7 +97,8 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
             }
 
             override fun onCompleteTodo(todoItem: TodosWithSubitems) {
-
+                todoItem.todo.completed = true
+                taskViewModel.updateTodo(todoItem.todo)
             }
         })
 
@@ -258,10 +254,10 @@ fun showCreateTodoDialog(
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
         val subTodoList = mutableListOf<Subitem>()
-        val adapter = CreateTodoSublistAdapter(subTodoList)
+        val adapter = TodoSublistAdapter(subTodoList)
 
         adapter.onSubitemEventsListener =
-            object : CreateTodoSublistAdapter.OnSubitemEventsListener {
+            object : TodoSublistAdapter.OnSubitemEventsListener {
                 override fun onClickDelete(itemPosition: Int) {
                     // Remove the subitem from the RecyclerView
                     subTodoList.removeAt(itemPosition)
@@ -278,6 +274,10 @@ fun showCreateTodoDialog(
 
                 override fun onTextChange(itemPosition: Int, text: String) {
                     subTodoList[itemPosition].item = text
+                }
+
+                override fun onComplete(subitem: Subitem) {
+
                 }
             }
 

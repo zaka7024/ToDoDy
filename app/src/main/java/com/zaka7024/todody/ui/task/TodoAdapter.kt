@@ -1,5 +1,6 @@
 package com.zaka7024.todody.ui.task
 
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,17 +35,17 @@ class TodoAdapter(
                 todoText.text = todoItem.todo.title
                 date.text = todoItem.todo.date.toString()
 
+                // Check if this t'odo completed
+                if(todoItem.todo.completed) {
+                    styleAsDone()
+                }
+
                 todoBg.setOnClickListener {
                     onTodoHolderEventsListener?.onClick(todoItem)
                 }
 
                 todoItemBinding.circle.setOnClickListener {
-                    circle.setImageDrawable(
-                        ResourcesCompat.getDrawable(
-                            root.context.resources,
-                            R.drawable.ic_baseline_check_circle_outline_24, null
-                        )
-                    )
+                    styleAsDone()
                     onTodoHolderEventsListener?.onCompleteTodo(todoItem)
                 }
             }
@@ -55,6 +56,18 @@ class TodoAdapter(
 
             if (todoItem.subitems.isNotEmpty()) {
                 todoItemBinding.hint.visibility = View.VISIBLE
+            }
+        }
+
+        private fun styleAsDone() {
+            todoItemBinding.apply {
+                circle.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                        root.context.resources,
+                        R.drawable.ic_baseline_check_circle_24, null
+                    )
+                )
+                todoText.paintFlags = todoText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
             }
         }
     }

@@ -44,4 +44,8 @@ class TodoRepository @Inject constructor(private val todoDao: TodoDao) {
     suspend fun getCategoryByName(categoryName: String): Category {
         return todoDao.getCategory(categoryName)
     }
+
+    suspend fun updateTodo(todo: Todo) {
+        todoDao.update(todo)
+    }
 }

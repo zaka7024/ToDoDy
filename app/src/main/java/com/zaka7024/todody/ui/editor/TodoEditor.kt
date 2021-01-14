@@ -1,20 +1,17 @@
-package com.zaka7024.todody.ui
+package com.zaka7024.todody.ui.editor
 
 import android.os.Bundle
 import android.view.View
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.zaka7024.todody.CreateTodoSublistAdapter
+import com.zaka7024.todody.TodoSublistAdapter
 import com.zaka7024.todody.R
 import com.zaka7024.todody.data.Category
 import com.zaka7024.todody.data.Subitem
 import com.zaka7024.todody.databinding.FragmentTodoEditorBinding
+import com.zaka7024.todody.ui.TodoEditorArgs
 import com.zaka7024.todody.ui.task.TaskFragment
-import com.zaka7024.todody.ui.task.TaskViewModel
 import com.zaka7024.todody.ui.task.showCategoryPopup
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -22,7 +19,7 @@ import kotlinx.coroutines.launch
 class TodoEditor : Fragment(R.layout.fragment_todo_editor) {
 
     private lateinit var binding: FragmentTodoEditorBinding
-    private lateinit var subitemAdapter: CreateTodoSublistAdapter
+    private lateinit var subitemAdapter: TodoSublistAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -32,7 +29,24 @@ class TodoEditor : Fragment(R.layout.fragment_todo_editor) {
 
         val subitems = args.todo.subitems
 
-        subitemAdapter = CreateTodoSublistAdapter(subitems)
+        subitemAdapter = TodoSublistAdapter(subitems)
+        subitemAdapter.onSubitemEventsListener = object : TodoSublistAdapter.OnSubitemEventsListener {
+            override fun onClickDelete(itemPosition: Int) {
+
+            }
+
+            override fun onClickEnter() {
+
+            }
+
+            override fun onTextChange(itemPosition: Int, text: String) {
+
+            }
+
+            override fun onComplete(subitem: Subitem) {
+
+            }
+        }
 
         binding.apply {
             val todoItem = args.todo

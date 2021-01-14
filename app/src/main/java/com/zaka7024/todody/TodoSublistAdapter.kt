@@ -1,20 +1,21 @@
 package com.zaka7024.todody
 
 import android.content.Context
+import android.graphics.Paint
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.zaka7024.todody.data.Subitem
 import com.zaka7024.todody.databinding.TodoSubitemBinding
 
 
-class CreateTodoSublistAdapter(private val sublist: MutableList<Subitem>) :
-    RecyclerView.Adapter<CreateTodoSublistAdapter.SubitemHolder>() {
+class TodoSublistAdapter(private val sublist: MutableList<Subitem>) :
+    RecyclerView.Adapter<TodoSublistAdapter.SubitemHolder>() {
 
     var onSubitemEventsListener: OnSubitemEventsListener? = null
 
@@ -22,6 +23,7 @@ class CreateTodoSublistAdapter(private val sublist: MutableList<Subitem>) :
         fun onClickDelete(itemPosition: Int)
         fun onClickEnter()
         fun onTextChange(itemPosition: Int, text: String)
+        fun onComplete(subitem: Subitem)
     }
 
     inner class SubitemHolder(private val todoSubitemBinding: TodoSubitemBinding) :
@@ -29,8 +31,9 @@ class CreateTodoSublistAdapter(private val sublist: MutableList<Subitem>) :
             todoSubitemBinding.root
         ) {
 
-        fun bind(itemPosition: Int) {
-            todoSubitemBinding.subItemEditText.setText(sublist[itemPosition].item)
+        fun bind() {
+            val subitem = sublist[absoluteAdapterPosition]
+            todoSubitemBinding.subItemEditText.setText(sublist[absoluteAdapterPosition].item)
 
             // Focus on EditText and show the keyboard
             if (todoSubitemBinding.subItemEditText.requestFocus()) {
@@ -40,6 +43,10 @@ class CreateTodoSublistAdapter(private val sublist: MutableList<Subitem>) :
                     InputMethodManager.SHOW_FORCED,
                     InputMethodManager.HIDE_IMPLICIT_ONLY
                 )
+            }
+
+            if (subitem.completed) {
+                styleAsDone()
             }
 
             todoSubitemBinding.apply {
@@ -66,7 +73,7 @@ class CreateTodoSublistAdapter(private val sublist: MutableList<Subitem>) :
                         before: Int,
                         count: Int
                     ) {
-                        onSubitemEventsListener?.onTextChange(itemPosition, s.toString())
+                        onSubitemEventsListener?.onTextChange(absoluteAdapterPosition, s.toString())
                     }
 
                     override fun afterTextChanged(s: Editable?) {
@@ -75,8 +82,27 @@ class CreateTodoSublistAdapter(private val sublist: MutableList<Subitem>) :
                 })
 
                 delete.setOnClickListener {
-                    onSubitemEventsListener?.onClickDelete(itemPosition)
+                    onSubitemEventsListener?.onClickDelete(absoluteAdapterPosition)
                 }
+
+                //
+                circle.setOnClickListener {
+                    styleAsDone()
+                    onSubitemEventsListener?.onComplete(subitem)
+                }
+            }
+        }
+
+        private fun styleAsDone() {
+            todoSubitemBinding.apply {
+                circle.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                        root.context.resources,
+                        R.drawable.ic_baseline_check_circle_24, null
+                    )
+                )
+
+                subItemEditText.paintFlags = subItemEditText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
             }
         }
     }
@@ -84,13 +110,13 @@ class CreateTodoSublistAdapter(private val sublist: MutableList<Subitem>) :
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): CreateTodoSublistAdapter.SubitemHolder {
+    ): TodoSublistAdapter.SubitemHolder {
         val binding = TodoSubitemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return SubitemHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: CreateTodoSublistAdapter.SubitemHolder, position: Int) {
-        holder.bind(position)
+    override fun onBindViewHolder(holder: TodoSublistAdapter.SubitemHolder, position: Int) {
+        holder.bind()
     }
 
     override fun getItemCount() = sublist.size
