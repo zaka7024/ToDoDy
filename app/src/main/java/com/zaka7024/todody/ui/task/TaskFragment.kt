@@ -1,8 +1,11 @@
 package com.zaka7024.todody.ui.task
 
+import android.app.AlarmManager
 import android.app.Dialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -16,6 +19,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -38,6 +42,7 @@ import com.zaka7024.todody.data.Todo
 import com.zaka7024.todody.data.TodosWithSubitems
 import com.zaka7024.todody.databinding.CalendarDayLayoutBinding
 import com.zaka7024.todody.databinding.FragmentTaskBinding
+import com.zaka7024.todody.utils.AlarmReceiver
 import com.zaka7024.todody.utils.WrapContentLinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.todo_calendar_layout.*
@@ -197,6 +202,13 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                                         categoryName
                                     )
                                     todayTodoAdapter.notifyItemInserted(todos.size - 1)
+                                    // Create notification
+                                    if(todo.reminderTime != null) {
+                                        val calendar = Calendar.getInstance()
+                                        calendar.time = todo.reminderTime!!
+                                        startAlarm(calendar)
+                                    }
+
                                 }
                             }
 
@@ -207,6 +219,13 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                 }
             }
         })
+    }
+
+    private fun startAlarm(calendar: Calendar) {
+        val alarmManager = requireActivity().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(requireContext(), AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(requireContext(), 0, intent, 0)
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
     }
 
     interface TodoCreateListener {
