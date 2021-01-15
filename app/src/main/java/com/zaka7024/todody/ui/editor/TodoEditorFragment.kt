@@ -6,10 +6,12 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.navigateUp
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -105,12 +107,14 @@ class TodoEditorFragment : Fragment(R.layout.fragment_todo_editor) {
 
             //
             addSubitem.setOnClickListener {
-                val subitem = Subitem(item = "")
-                subitems.add(subitem)
-                subitemAdapter.notifyItemInserted(subitems.size - 1)
-
-                subitem.todoOwnerId = args.todo.todo.todoId
-                editorViewModel.addSubitem(subitem)
+                lifecycleScope.launch {
+                    val subitem = Subitem(item = "")
+                    val id = editorViewModel.addSubitem(subitem)
+                    subitem.id = id
+                    subitems.add(subitem)
+                    subitemAdapter.notifyItemInserted(subitems.size - 1)
+                    subitem.todoOwnerId = args.todo.todo.todoId
+                }
             }
 
             //

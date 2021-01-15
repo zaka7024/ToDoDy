@@ -43,6 +43,10 @@ class TodoRepository @Inject constructor(private val todoDao: TodoDao) {
         todoDao.insertSubitems(*subitems)
     }
 
+    suspend fun insertSubitem(subitems: Subitem): Long {
+        return todoDao.insertSubitem(subitems)
+    }
+
     suspend fun getCategoryByName(categoryName: String): Category {
         return todoDao.getCategory(categoryName)
     }

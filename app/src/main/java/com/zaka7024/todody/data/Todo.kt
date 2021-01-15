@@ -37,7 +37,7 @@ data class Todo(
 @Parcelize
 data class Subitem(
     @PrimaryKey(autoGenerate = true)
-    val id: Long? = null,
+    var id: Long? = null,
     var todoOwnerId: Long? = null,
     var item: String,
     var completed: Boolean = false

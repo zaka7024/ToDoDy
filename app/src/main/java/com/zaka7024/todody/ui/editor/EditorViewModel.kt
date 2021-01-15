@@ -12,6 +12,7 @@ import com.zaka7024.todody.data.TodosWithSubitems
 import com.zaka7024.todody.ui.task.TodoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 class EditorViewModel @ViewModelInject constructor(private val todoRepository: TodoRepository) :
@@ -50,12 +51,8 @@ class EditorViewModel @ViewModelInject constructor(private val todoRepository: T
         }
     }
 
-    fun addSubitem(subitem: Subitem) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                todoRepository.insertSubitems(subitem)
-            }
-        }
+    suspend fun addSubitem(subitem: Subitem): Long = runBlocking {
+        todoRepository.insertSubitem(subitem)
     }
 
     fun removeSubitem(subitem: Subitem) {

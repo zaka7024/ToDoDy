@@ -26,7 +26,10 @@ interface TodoDao {
     fun getAllCategories(): List<Category>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertSubitems(vararg subitems: Subitem)
+    suspend fun insertSubitems(vararg subitems: Subitem)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSubitem(subitems: Subitem) : Long
 
     @Delete
     fun removeSubitem(subitems: Subitem)
