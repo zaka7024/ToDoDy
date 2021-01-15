@@ -218,7 +218,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
     }
 
     interface CategoryPopupEventListener {
-        fun onSelectCategory(categoryName: String)
+        fun onSelectCategory(category: Category)
         fun onCategoryAddButtonClick(popupMenu: PopupMenu)
     }
 
@@ -302,11 +302,11 @@ fun showCreateTodoDialog(
                 categories,
                 it,
                 object : TaskFragment.CategoryPopupEventListener {
-                    override fun onSelectCategory(categoryName: String) {
-                        selectedCategory = categoryName
+                    override fun onSelectCategory(category: Category) {
+                        selectedCategory = category.categoryName
                         todoCategoryButton.alpha = 0f
                         todoCategoryButton.animate().alpha(1f).duration = 400
-                        todoCategoryButton.text = categoryName
+                        todoCategoryButton.text = category.categoryName
                         selectedCategory = todoCategoryButton.text.toString()
                     }
 
@@ -622,16 +622,19 @@ fun showCategoryPopup(
 
     val popupMenu = PopupMenu(context, anchor)
     val menu = popupMenu.menu
+    val map = mutableMapOf<String, Int>()
     //TODO:: Add icon to the (New Category) Item
     popupMenu.inflate(R.menu.category_menu)
-    for (category in categories) {
+    for (i in 0.until(categories.size)) {
+        val category = categories[i]
+        map[category.categoryName] = i
         menu.add(category.categoryName)
     }
     popupMenu.setOnMenuItemClickListener { item ->
         if (item.itemId == R.id.add_category_item) {
             categoryPopupEventListener.onCategoryAddButtonClick(popupMenu)
         } else {
-            categoryPopupEventListener.onSelectCategory(item.title.toString())
+            categoryPopupEventListener.onSelectCategory(categories[map[item.title.toString()]!!])
         }
         true
     }

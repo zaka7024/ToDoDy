@@ -117,8 +117,9 @@ class TodoEditorFragment : Fragment(R.layout.fragment_todo_editor) {
                     category.setOnClickListener {
                         showCategoryPopup(requireContext(), userCategories, it,
                             object : TaskFragment.CategoryPopupEventListener {
-                                override fun onSelectCategory(categoryName: String) {
-
+                                override fun onSelectCategory(category: Category) {
+                                    todoItem.todo.categoryOwnerId = category.categoryId
+                                    editorViewModel.updateTodo(todoItem.todo)
                                 }
 
                                 override fun onCategoryAddButtonClick(popupMenu: PopupMenu) {
