@@ -22,6 +22,30 @@ class EditorViewModel @ViewModelInject constructor(private val todoRepository: T
         }
     }
 
+    fun addSubitem(subitem: Subitem) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                todoRepository.insertSubitems(subitem)
+            }
+        }
+    }
+
+    fun removeSubitem(subitem: Subitem) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                todoRepository.removeSubitem(subitem)
+            }
+        }
+    }
+
+    fun updateTodo(todo: Todo) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                todoRepository.updateTodo(todo)
+            }
+        }
+    }
+
     fun updateSubitems(todosWithSubitems: TodosWithSubitems) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {

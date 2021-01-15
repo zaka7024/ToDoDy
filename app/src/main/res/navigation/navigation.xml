@@ -9,7 +9,11 @@
         android:id="@+id/calendarFragment"
         android:name="com.zaka7024.todody.ui.calendar.CalendarFragment"
         android:label="fragment_calendar"
-        tools:layout="@layout/fragment_calendar" />
+        tools:layout="@layout/fragment_calendar" >
+        <action
+            android:id="@+id/action_calendarFragment_to_todoEditor"
+            app:destination="@id/todoEditor" />
+    </fragment>
     <fragment
         android:id="@+id/mineFragment"
         android:name="com.zaka7024.todody.ui.mine.MineFragment"

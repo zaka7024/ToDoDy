@@ -2,14 +2,12 @@ package com.zaka7024.todody.ui.calendar
 
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.DayOwner
@@ -25,7 +23,6 @@ import com.zaka7024.todody.ui.task.TaskFragment
 import com.zaka7024.todody.ui.task.TodoAdapter
 import com.zaka7024.todody.ui.task.showCreateTodoDialog
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.WeekFields
 import java.util.*
@@ -62,7 +59,17 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
         binding = FragmentCalendarBinding.bind(view)
 
         val todos = mutableListOf<TodosWithSubitems>()
-        todoAdapter = TodoAdapter(todos)
+        todoAdapter = TodoAdapter(todos, object : TodoAdapter.OnTodoHolderEventsListener {
+            override fun onClick(todoItem: TodosWithSubitems) {
+                findNavController().navigate(
+                    CalendarFragmentDirections.actionCalendarFragmentToTodoEditor(todoItem)
+                )
+            }
+
+            override fun onCompleteTodo(todoItem: TodosWithSubitems) {
+                calendarViewModel.updateTodo(todoItem.todo)
+            }
+        })
 
         binding.apply {
             todosRv.adapter = todoAdapter
@@ -77,7 +84,11 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
                     requireContext(),
                     userCategories,
                     object : TaskFragment.TodoCreateListener {
-                        override fun onSend(todo: Todo, subitems: List<Subitem>, categoryNmae: String) {
+                        override fun onSend(
+                            todo: Todo,
+                            subitems: List<Subitem>,
+                            categoryNmae: String
+                        ) {
                             if (todo.title.isEmpty()) {
                                 Toast.makeText(
                                     requireContext(),
@@ -86,7 +97,11 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
                                 ).show()
                             } else {
                                 //todos.add(todo)
-                                calendarViewModel.saveTodo(todo, subitems.toTypedArray(), categoryNmae)
+                                calendarViewModel.saveTodo(
+                                    todo,
+                                    subitems.toTypedArray(),
+                                    categoryNmae
+                                )
                                 todoAdapter.notifyItemInserted(todos.size - 1)
                             }
                         }
@@ -94,7 +109,8 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
                         override fun onCreateCategory(categoryName: String) {
 
                         }
-                    }, calendarViewModel.currentSelectedDay.value)
+                    }, calendarViewModel.currentSelectedDay.value
+                )
             }
         })
 

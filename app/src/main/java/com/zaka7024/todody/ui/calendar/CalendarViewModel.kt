@@ -45,8 +45,15 @@ class CalendarViewModel @ViewModelInject constructor(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val todos = todoRepository.getAllTodosWithinDate(_currentSelectedDay.value!!)
-                Log.i("taskViewModel", "todoRepository: $todos")
                 _userTodos.postValue(todos)
+            }
+        }
+    }
+
+    fun updateTodo(todo: Todo) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                todoRepository.updateTodo(todo)
             }
         }
     }

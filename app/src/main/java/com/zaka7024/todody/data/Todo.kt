@@ -21,7 +21,7 @@ data class Todo(
     @PrimaryKey(autoGenerate = true)
     val todoId: Long? = null,
     var categoryOwnerId: Long? = null,
-    val title: String,
+    var title: String,
     var date: LocalDate? = null,
     var time: Date? = null,
     var reminderTime: Date? = null,

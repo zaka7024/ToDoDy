@@ -25,6 +25,9 @@ interface TodoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertSubitems(vararg subitems: Subitem)
 
+    @Delete
+    fun removeSubitem(subitems: Subitem)
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(todo: Todo)
 
