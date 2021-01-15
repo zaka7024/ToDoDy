@@ -66,6 +66,16 @@ class EditorViewModel @ViewModelInject constructor(private val todoRepository: T
         }
     }
 
+    fun updateTodoCategory(todo: Todo, categoryName: String) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val categoryId = todoRepository.getCategoryByName(categoryName).categoryId
+                todo.categoryOwnerId = categoryId
+                todoRepository.updateTodo(todo)
+            }
+        }
+    }
+
     fun updateTodo(todo: Todo) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {

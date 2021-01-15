@@ -221,7 +221,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
     }
 
     interface CategoryPopupEventListener {
-        fun onSelectCategory(category: Category)
+        fun onSelectCategoryName(categoryName: String)
         fun onCategoryAddButtonClick(popupMenu: PopupMenu)
     }
 
@@ -289,7 +289,7 @@ fun showCreateTodoDialog(
         // Add the first subitem
         val todoListButton = findViewById<ImageView>(R.id.todo_list)
         todoListButton.setOnClickListener {
-            subTodoList.add(Subitem(item = "Item ${subTodoList.size}"))
+            subTodoList.add(Subitem(item = ""))
             adapter.notifyItemInserted(subTodoList.size - 1)
             sublistRecyclerView.scrollToPosition(subTodoList.size - 1)
         }
@@ -305,11 +305,11 @@ fun showCreateTodoDialog(
                 categories,
                 it,
                 object : TaskFragment.CategoryPopupEventListener {
-                    override fun onSelectCategory(category: Category) {
-                        selectedCategory = category.categoryName
+                    override fun onSelectCategoryName(categoryName: String) {
+                        selectedCategory = categoryName
                         todoCategoryButton.alpha = 0f
                         todoCategoryButton.animate().alpha(1f).duration = 400
-                        todoCategoryButton.text = category.categoryName
+                        todoCategoryButton.text = categoryName
                         selectedCategory = todoCategoryButton.text.toString()
                     }
 
@@ -625,19 +625,17 @@ fun showCategoryPopup(
 
     val popupMenu = PopupMenu(context, anchor)
     val menu = popupMenu.menu
-    val map = mutableMapOf<String, Int>()
     //TODO:: Add icon to the (New Category) Item
     popupMenu.inflate(R.menu.category_menu)
     for (i in 0.until(categories.size)) {
         val category = categories[i]
-        map[category.categoryName] = i
         menu.add(category.categoryName)
     }
     popupMenu.setOnMenuItemClickListener { item ->
         if (item.itemId == R.id.add_category_item) {
             categoryPopupEventListener.onCategoryAddButtonClick(popupMenu)
         } else {
-            categoryPopupEventListener.onSelectCategory(categories[map[item.title.toString()] ?: categories.size])
+            categoryPopupEventListener.onSelectCategoryName(item.title.toString())
         }
         true
     }
