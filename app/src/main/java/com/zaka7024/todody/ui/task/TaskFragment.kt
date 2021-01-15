@@ -97,7 +97,6 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
             }
 
             override fun onCompleteTodo(todoItem: TodosWithSubitems) {
-                todoItem.todo.completed = true
                 taskViewModel.updateTodo(todoItem.todo)
             }
         })

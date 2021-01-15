@@ -36,7 +36,7 @@ class TodoAdapter(
                 date.text = todoItem.todo.date.toString()
 
                 // Check if this t'odo completed
-                if(todoItem.todo.completed) {
+                if (todoItem.todo.completed) {
                     styleAsDone()
                 }
 
@@ -45,7 +45,12 @@ class TodoAdapter(
                 }
 
                 todoItemBinding.circle.setOnClickListener {
-                    styleAsDone()
+                    todoItem.todo.completed = !todoItem.todo.completed
+                    if(todoItem.todo.completed) {
+                        styleAsDone()
+                    } else {
+                        removeDoneStyle()
+                    }
                     onTodoHolderEventsListener?.onCompleteTodo(todoItem)
                 }
             }
@@ -68,6 +73,18 @@ class TodoAdapter(
                     )
                 )
                 todoText.paintFlags = todoText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            }
+        }
+
+        private fun removeDoneStyle() {
+            todoItemBinding.apply {
+                circle.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                        root.context.resources,
+                        R.drawable.ic_round_radio_button_unchecked_24, null
+                    )
+                )
+                todoText.paintFlags = 0
             }
         }
     }
