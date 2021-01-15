@@ -70,6 +70,7 @@
             android:background="@drawable/transparent_bg"
             android:drawableStart="@drawable/ic_baseline_add_24"
             android:drawablePadding="8dp"
+            android:drawableTint="@color/secondaryDarkColor"
             android:gravity="start|center_vertical"
             android:paddingStart="16dp"
             android:paddingEnd="8dp"
@@ -159,8 +160,8 @@
 
         <ImageView
             android:id="@+id/delete_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             app:layout_constraintBottom_toBottomOf="@+id/category"
             app:layout_constraintEnd_toEndOf="@+id/todo_edittext"
             app:layout_constraintTop_toTopOf="@+id/category"

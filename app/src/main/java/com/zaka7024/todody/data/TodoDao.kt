@@ -72,4 +72,8 @@ interface TodoDao {
     @Transaction
     @Query("SELECT * FROM category where categoryName=:name")
     fun getAllTodosWithinCategory(name: String): CategoryWithTodos
+
+    @Transaction
+    @Query("SELECT count(todoId) FROM todos where completed=:completeCondition")
+    fun getAllTodosCount(completeCondition: Boolean): LiveData<Int>
 }

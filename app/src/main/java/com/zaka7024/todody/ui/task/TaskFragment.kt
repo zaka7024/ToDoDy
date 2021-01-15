@@ -149,6 +149,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
             todos.clear()
             todos.addAll(userTodos)
             todayTodoAdapter.notifyDataSetChanged()
+            binding.todayRv.adapter = todayTodoAdapter
 
             binding.todayNoTasksHint.isVisible = userTodos.isEmpty()
         })

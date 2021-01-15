@@ -30,15 +30,11 @@ class CategoryAdapter(
             binding.apply {
                 categoryText.text = category.categoryName
 
-                val offset = 10f
-                //root.translationY -= offset
-                //root.animate().translationYBy(offset).duration = 400
-
                 if(position == currentSelectedIndex) {
                     categoryText.backgroundTintList = ResourcesCompat.getColorStateList(root.resources, R.color.primaryColor, null)
                     categoryText.setTextColor(ResourcesCompat.getColorStateList(root.resources, R.color.primaryLightColor, null))
                 }else {
-                    categoryText.backgroundTintList = ResourcesCompat.getColorStateList(root.resources, R.color.secondaryDarkColor, null)
+                    categoryText.backgroundTintList = ResourcesCompat.getColorStateList(root.resources, R.color.secondaryLightColor, null)
                     categoryText.setTextColor(ResourcesCompat.getColorStateList(root.resources, R.color.primaryDarkColor, null))
                 }
 

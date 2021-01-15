@@ -8,6 +8,8 @@ import javax.inject.Inject
 class TodoRepository @Inject constructor(private val todoDao: TodoDao) {
 
     val categories = todoDao.getAllCategory()
+    val completedTodos = todoDao.getAllTodosCount(true)
+    val pendingTodos = todoDao.getAllTodosCount(false)
 
     suspend fun getTodosWithinCategory(categoryName: String): CategoryWithTodos {
         return todoDao.getAllTodosWithinCategory(categoryName)
