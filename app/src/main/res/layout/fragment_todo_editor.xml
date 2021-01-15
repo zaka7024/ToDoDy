@@ -19,7 +19,7 @@
             android:layout_marginEnd="16dp"
             android:autofillHints=""
             android:background="@drawable/rounded"
-            android:backgroundTint="@color/secondaryLightColor"
+            android:backgroundTint="@color/primaryLightColor"
             android:ems="10"
             android:hint="@string/i_am_going_to"
             android:inputType="textMultiLine"
@@ -28,7 +28,7 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:textColor="@color/primaryTextColor"
-            android:textColorHint="@color/primaryLightColor"
+            android:textColorHint="@color/secondaryLightColor"
             android:textStyle="normal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/category"
@@ -40,10 +40,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:alpha="0"
-            android:background="@drawable/rounded"
+            android:background="@drawable/oval"
             android:backgroundTint="@color/secondaryLightColor"
             android:gravity="center"
-            android:padding="8dp"
+            android:padding="6dp"
             android:text="@string/new_category"
             android:textAlignment="center"
             android:textSize="18sp"
@@ -166,7 +166,7 @@
             app:layout_constraintEnd_toEndOf="@+id/todo_edittext"
             app:layout_constraintTop_toTopOf="@+id/category"
             app:srcCompat="@drawable/ic_baseline_delete_24"
-            app:tint="@color/secondaryDarkColor" />
+            app:tint="@color/primaryColor" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

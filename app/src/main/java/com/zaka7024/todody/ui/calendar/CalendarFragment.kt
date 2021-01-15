@@ -96,7 +96,6 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
                                     Toast.LENGTH_SHORT
                                 ).show()
                             } else {
-                                //todos.add(todo)
                                 calendarViewModel.saveTodo(
                                     todo,
                                     subitems.toTypedArray(),
@@ -153,23 +152,6 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
                             }
                         }
 
-                    if (calendarViewModel.currentSelectedDay.value == day.date) {
-                        container.textView.setTextColor(
-                            ResourcesCompat.getColor(
-                                resources,
-                                R.color.primaryDarkColor,
-                                null
-                            )
-                        )
-                        container.textView.background = ResourcesCompat.getDrawable(
-                            resources,
-                            R.drawable.calendar_day_bg,
-                            null
-                        )
-                    } else {
-                        container.textView.background = null
-                    }
-
                     if (day.owner == DayOwner.THIS_MONTH) {
                         container.textView.setTextColor(
                             ResourcesCompat.getColor(
@@ -186,6 +168,23 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
                                 null
                             )
                         )
+                    }
+
+                    if (calendarViewModel.currentSelectedDay.value == day.date) {
+                        container.textView.setTextColor(
+                            ResourcesCompat.getColor(
+                                resources,
+                                R.color.primaryLightColor,
+                                null
+                            )
+                        )
+                        container.textView.background = ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.calendar_day_bg,
+                            null
+                        )
+                    } else {
+                        container.textView.background = null
                     }
                 }
 

@@ -5,6 +5,6 @@
     android:layout_width="40dp"
     android:layout_height="30dp"
     android:gravity="center"
-    android:textColor="@color/primaryColor"
+    android:textColor="@color/primaryLightColor"
     android:textSize="18sp"
     tools:text="22" />
