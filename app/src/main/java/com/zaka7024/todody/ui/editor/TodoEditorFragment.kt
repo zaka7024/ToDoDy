@@ -16,6 +16,7 @@ import com.zaka7024.todody.databinding.FragmentTodoEditorBinding
 import com.zaka7024.todody.ui.task.TaskFragment
 import com.zaka7024.todody.ui.task.showCategoryPopup
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_todo_editor.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -32,30 +33,38 @@ class TodoEditorFragment : Fragment(R.layout.fragment_todo_editor) {
         binding = FragmentTodoEditorBinding.bind(view)
         val args = TodoEditorFragmentArgs.fromBundle(requireArguments())
 
+        editorViewModel.getCategory(args.todo.todo.categoryOwnerId!!)
+
         val subitems = args.todo.subitems
 
         subitemAdapter = TodoSublistAdapter(subitems)
-        subitemAdapter.onSubitemEventsListener = object : TodoSublistAdapter.OnSubitemEventsListener {
-            override fun onClickDelete(itemPosition: Int) {
-                val subitem = subitems[itemPosition]
-                subitems.removeAt(itemPosition)
-                subitemAdapter.notifyItemRemoved(itemPosition)
-                editorViewModel.removeSubitem(subitem)
+        subitemAdapter.onSubitemEventsListener =
+            object : TodoSublistAdapter.OnSubitemEventsListener {
+                override fun onClickDelete(itemPosition: Int) {
+                    val subitem = subitems[itemPosition]
+                    subitems.removeAt(itemPosition)
+                    subitemAdapter.notifyItemRemoved(itemPosition)
+                    editorViewModel.removeSubitem(subitem)
+                }
+
+                override fun onClickEnter() {
+
+                }
+
+                override fun onTextChange(itemPosition: Int, text: String) {
+                    val subitem = subitems[itemPosition]
+                    subitem.item = text
+                    editorViewModel.updateSubitem(subitem)
+                }
+
+                override fun onComplete(subitem: Subitem) {
+                    editorViewModel.updateSubitem(subitem)
+                }
             }
 
-            override fun onClickEnter() {
-
-            }
-
-            override fun onTextChange(itemPosition: Int, text: String) {
-                val subitem = subitems[itemPosition]
-                subitem.item = text
-                editorViewModel.updateSubitem(subitem)
-            }
-
-            override fun onComplete(subitem: Subitem) {
-                editorViewModel.updateSubitem(subitem)
-            }
+        //
+        editorViewModel.currentCategory.observe(viewLifecycleOwner) { currentCategory ->
+            category.text = currentCategory.categoryName
         }
 
         binding.apply {
@@ -101,9 +110,10 @@ class TodoEditorFragment : Fragment(R.layout.fragment_todo_editor) {
             reminder.text = todoItem.todo.reminderTime.toString()
 
             //
-            editorViewModel.categories.observe(viewLifecycleOwner) {
-                userCategories->
+            editorViewModel.categories.observe(viewLifecycleOwner) { userCategories ->
                 if (userCategories != null) {
+                    //
+                    category.animate().alpha(1f).duration = 400
                     category.setOnClickListener {
                         showCategoryPopup(requireContext(), userCategories, it,
                             object : TaskFragment.CategoryPopupEventListener {

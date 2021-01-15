@@ -16,6 +16,9 @@ interface TodoDao {
     @Query("select * from category where categoryName=:name limit 1")
     fun getCategory(name: String): Category
 
+    @Query("select * from category where categoryId=:categoryId limit 1")
+    fun getCategory(categoryId: Long): Category
+
     @Query("select * from category")
     fun getAllCategory(): LiveData<List<Category>>
 

@@ -47,6 +47,8 @@
             android:text="@string/new_category"
             android:textAlignment="center"
             android:textSize="18sp"
+            android:alpha="0"
+            tools:alpha="1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

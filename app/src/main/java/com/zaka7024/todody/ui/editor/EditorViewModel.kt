@@ -21,11 +21,24 @@ class EditorViewModel @ViewModelInject constructor(private val todoRepository: T
     val categories: LiveData<List<Category>>
         get() = _categories
 
+    private val _currentCategory = MutableLiveData<Category>()
+    val currentCategory: LiveData<Category>
+        get() = _currentCategory
+
     fun updateSubitem(subitem: Subitem) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 todoRepository.updateSubitem(subitem)
             }
+        }
+    }
+
+    fun getCategory(categoryId: Long) {
+        viewModelScope.launch {
+            val category = withContext(Dispatchers.IO) {
+                todoRepository.getCategoryById(categoryId)
+            }
+            _currentCategory.postValue(category)
         }
     }
 
