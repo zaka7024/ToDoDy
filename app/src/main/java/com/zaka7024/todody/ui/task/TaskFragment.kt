@@ -636,7 +636,7 @@ fun showCategoryPopup(
         if (item.itemId == R.id.add_category_item) {
             categoryPopupEventListener.onCategoryAddButtonClick(popupMenu)
         } else {
-            categoryPopupEventListener.onSelectCategory(categories[map[item.title.toString()]!!])
+            categoryPopupEventListener.onSelectCategory(categories[map[item.title.toString()] ?: categories.size])
         }
         true
     }
