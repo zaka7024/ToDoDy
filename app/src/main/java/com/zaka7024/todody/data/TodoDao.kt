@@ -31,6 +31,9 @@ interface TodoDao {
     @Delete
     fun removeSubitem(subitems: Subitem)
 
+    @Delete
+    fun removeTodo(todo: Todo)
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(todo: Todo)
 

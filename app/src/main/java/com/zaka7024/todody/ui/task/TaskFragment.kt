@@ -81,6 +81,8 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        lifecycle.addObserver(taskViewModel)
+
         val binding = FragmentTaskBinding.bind(view)
 
         val todos = mutableListOf<TodosWithSubitems>()

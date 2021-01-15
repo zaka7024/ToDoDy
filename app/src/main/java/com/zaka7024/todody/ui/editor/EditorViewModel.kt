@@ -33,6 +33,14 @@ class EditorViewModel @ViewModelInject constructor(private val todoRepository: T
         }
     }
 
+    fun removeTodo(todo: Todo) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                todoRepository.removeTodo(todo)
+            }
+        }
+    }
+
     fun getCategory(categoryId: Long) {
         viewModelScope.launch {
             val category = withContext(Dispatchers.IO) {

@@ -1,5 +1,8 @@
 package com.zaka7024.todody.ui.editor
 
+import android.app.AlertDialog
+import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,6 +10,8 @@ import android.view.View
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.navigateUp
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zaka7024.todody.TodoSublistAdapter
 import com.zaka7024.todody.R
@@ -19,6 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_todo_editor.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 @AndroidEntryPoint
 class TodoEditorFragment : Fragment(R.layout.fragment_todo_editor) {
@@ -104,6 +110,24 @@ class TodoEditorFragment : Fragment(R.layout.fragment_todo_editor) {
 
                 subitem.todoOwnerId = args.todo.todo.todoId
                 editorViewModel.addSubitem(subitem)
+            }
+
+            //
+            backButton.setOnClickListener {
+                findNavController().navigateUp()
+            }
+
+            deleteButton.setOnClickListener {
+                AlertDialog.Builder(requireContext())
+                    .setMessage("Do you want to DELETE this Todo?")
+                    .setNegativeButton("CANCEL"
+                    ) { dialog, which ->
+                        dialog.dismiss()
+                    }.setPositiveButton("DELETE") { dialog, which ->
+                        editorViewModel.removeTodo(todoItem.todo)
+                        dialog.dismiss()
+                        findNavController().navigateUp()
+                    }.show()
             }
 
             date.text = "${todoItem.todo.date.toString()}:${todoItem.todo.time.toString()}"

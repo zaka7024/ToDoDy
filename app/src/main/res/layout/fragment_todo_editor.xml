@@ -15,7 +15,7 @@
             android:id="@+id/todo_edittext"
             android:layout_width="0dp"
             android:layout_height="64dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:autofillHints=""
             android:background="@drawable/rounded"
@@ -38,8 +38,8 @@
             android:id="@+id/category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
+            android:alpha="0"
             android:background="@drawable/rounded"
             android:backgroundTint="@color/secondaryLightColor"
             android:gravity="center"
@@ -47,10 +47,9 @@
             android:text="@string/new_category"
             android:textAlignment="center"
             android:textSize="18sp"
-            android:alpha="0"
-            tools:alpha="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="@+id/back_button"
+            app:layout_constraintTop_toBottomOf="@+id/back_button"
+            tools:alpha="1" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/todo_sublist_rv"
@@ -146,6 +145,27 @@
             app:layout_constraintStart_toStartOf="@+id/date"
             app:layout_constraintTop_toBottomOf="@+id/date"
             tools:text="2021/01/12 07:45" />
+
+        <ImageView
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_arrow_back_24"
+            app:tint="@color/primaryTextColor" />
+
+        <ImageView
+            android:id="@+id/delete_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/category"
+            app:layout_constraintEnd_toEndOf="@+id/todo_edittext"
+            app:layout_constraintTop_toTopOf="@+id/category"
+            app:srcCompat="@drawable/ic_baseline_delete_24"
+            app:tint="@color/secondaryDarkColor" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

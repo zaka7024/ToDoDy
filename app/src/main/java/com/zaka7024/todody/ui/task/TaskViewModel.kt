@@ -3,17 +3,14 @@ package com.zaka7024.todody.ui.task
 import android.content.Context
 import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.room.Room
 import com.zaka7024.todody.data.*
 import kotlinx.coroutines.*
 import java.time.LocalDate
 
 class TaskViewModel @ViewModelInject constructor(private val todoRepository: TodoRepository) :
-    ViewModel() {
+    ViewModel(), LifecycleObserver {
 
     private var _todayTodos = MutableLiveData<List<TodosWithSubitems>>()
     val todayTodos: LiveData<List<TodosWithSubitems>>
@@ -42,6 +39,11 @@ class TaskViewModel @ViewModelInject constructor(private val todoRepository: Tod
 
         getTodayTodos(1)
         getOthersTodos(1)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onTaskFragmentResume() {
+        getTodayTodos(currentSelectedCategory.value?.categoryId ?: 1)
     }
 
     private fun getTodayTodos(categoryId: Long) {

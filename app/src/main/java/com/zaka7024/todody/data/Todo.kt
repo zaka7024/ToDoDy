@@ -2,6 +2,7 @@ package com.zaka7024.todody.data
 
 import android.os.Parcelable
 import androidx.room.*
+import androidx.room.ForeignKey.CASCADE
 import kotlinx.android.parcel.Parcelize
 import java.time.LocalDate
 import java.util.*
@@ -28,7 +29,11 @@ data class Todo(
     var completed: Boolean = false
 ) : Parcelable
 
-@Entity
+@Entity(foreignKeys = [ForeignKey(entity = Todo::class,
+    parentColumns = arrayOf("todoId"),
+    childColumns = arrayOf("todoOwnerId"),
+    onDelete = ForeignKey.CASCADE)]
+)
 @Parcelize
 data class Subitem(
     @PrimaryKey(autoGenerate = true)
@@ -50,10 +55,10 @@ data class CategoryWithTodos(
 
 @Parcelize
 data class TodosWithSubitems(
-    @Embedded val todo: Todo,
-    @Relation(
-        parentColumn = "todoId",
-        entityColumn = "todoOwnerId"
-    )
-    val subitems: MutableList<Subitem>
+@Embedded val todo: Todo,
+@Relation(
+    parentColumn = "todoId",
+    entityColumn = "todoOwnerId",
+)
+val subitems: MutableList<Subitem>
 ) : Parcelable
