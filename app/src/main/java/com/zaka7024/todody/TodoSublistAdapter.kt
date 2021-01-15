@@ -85,10 +85,14 @@ class TodoSublistAdapter(private val sublist: MutableList<Subitem>) :
                     onSubitemEventsListener?.onClickDelete(absoluteAdapterPosition)
                 }
 
-                //
+                // Toggle done state
                 circle.setOnClickListener {
-                    styleAsDone()
-                    subitem.completed = true
+                    subitem.completed = !subitem.completed
+                    if(subitem.completed) {
+                        styleAsDone()
+                    } else {
+                        removeDoneStyle()
+                    }
                     onSubitemEventsListener?.onComplete(subitem)
                 }
             }
@@ -104,6 +108,19 @@ class TodoSublistAdapter(private val sublist: MutableList<Subitem>) :
                 )
 
                 subItemEditText.paintFlags = subItemEditText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            }
+        }
+
+        private fun removeDoneStyle() {
+            todoSubitemBinding.apply {
+                circle.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                        root.context.resources,
+                        R.drawable.ic_round_radio_button_unchecked_24, null
+                    )
+                )
+
+                subItemEditText.paintFlags = 0
             }
         }
     }
