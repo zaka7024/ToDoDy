@@ -208,7 +208,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                                     if(todo.reminderTime != null) {
                                         val calendar = Calendar.getInstance()
                                         calendar.time = todo.reminderTime!!
-                                        startAlarm(calendar)
+                                        startAlarm(todo, calendar)
                                     }
 
                                 }
@@ -223,9 +223,10 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
         })
     }
 
-    private fun startAlarm(calendar: Calendar) {
+    private fun startAlarm(todo: Todo, calendar: Calendar) {
         val alarmManager = requireActivity().getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(requireContext(), AlarmReceiver::class.java)
+        intent.putExtra("message", todo.title)
         val pendingIntent = PendingIntent.getBroadcast(requireContext(), 0, intent, 0)
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
     }
