@@ -20,6 +20,7 @@ import com.zaka7024.todody.data.Subitem
 import com.zaka7024.todody.databinding.FragmentTodoEditorBinding
 import com.zaka7024.todody.ui.task.TaskFragment
 import com.zaka7024.todody.ui.task.showCategoryPopup
+import com.zaka7024.todody.utils.Utils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_todo_editor.*
 import kotlinx.coroutines.GlobalScope
@@ -120,7 +121,8 @@ class TodoEditorFragment : Fragment(R.layout.fragment_todo_editor) {
             deleteButton.setOnClickListener {
                 AlertDialog.Builder(requireContext())
                     .setMessage("Do you want to DELETE this Todo?")
-                    .setNegativeButton("CANCEL"
+                    .setNegativeButton(
+                        "CANCEL"
                     ) { dialog, which ->
                         dialog.dismiss()
                     }.setPositiveButton("DELETE") { dialog, which ->
@@ -130,8 +132,17 @@ class TodoEditorFragment : Fragment(R.layout.fragment_todo_editor) {
                     }.show()
             }
 
-            date.text = "${todoItem.todo.date.toString()}:${todoItem.todo.time.toString()}"
-            reminder.text = todoItem.todo.reminderTime.toString()
+            //
+            if (todoItem.todo.time != null) {
+                date.text = "${todoItem.todo.date.toString()} : ${Utils.getDateTimeIn24Format(todoItem.todo.time as Date)}"
+            } else {
+                date.text = "${todoItem.todo.date.toString()}"
+            }
+            if (todoItem.todo.reminderTime != null) {
+                reminder.text = todoItem.todo.reminderTime.toString()
+            } else {
+                reminder.text = "No Reminder"
+            }
 
             //
             editorViewModel.categories.observe(viewLifecycleOwner) { userCategories ->
