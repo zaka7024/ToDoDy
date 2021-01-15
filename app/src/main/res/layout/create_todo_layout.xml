@@ -27,7 +27,7 @@
         android:maxLines="2"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
-        android:textColorHint="@color/primaryLightColor"
+        android:textColorHint="@color/primaryColor"
         android:textStyle="normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -81,7 +81,7 @@
         app:layout_constraintEnd_toEndOf="@+id/todo_edit_text"
         app:layout_constraintTop_toTopOf="@+id/todo_list"
         app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/circle" />
+        android:src="@drawable/circle" />
 
     <ImageView
         android:id="@+id/todo_send"

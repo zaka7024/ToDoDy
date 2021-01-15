@@ -697,6 +697,10 @@ fun showCreateCategoryDialog(
         val saveButton = findViewById<TextView>(R.id.save)
         saveButton.setOnClickListener {
             val categoryText = findViewById<EditText>(R.id.category_name).text.toString()
+            if (categoryText.trimEnd().isEmpty()) {
+                Toast.makeText(context, "Please enter a valid name", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             todoCreateListener.onCreateCategory(categoryText)
             // Add the new item
             popupMenu.menu.add(categoryText)
