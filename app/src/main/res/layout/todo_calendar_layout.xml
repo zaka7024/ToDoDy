@@ -113,7 +113,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"
             android:text="@string/cancel"
-            android:textColor="@color/secondaryColor"
+            android:textColor="@color/primaryColor"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/doneButton"
             app:layout_constraintEnd_toStartOf="@+id/doneButton"
@@ -125,7 +125,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="@string/done"
-            android:textColor="@color/primaryColor"
+            android:textColor="@color/primaryDarkColor"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="@+id/selectedReminder"
             app:layout_constraintTop_toBottomOf="@+id/selectedReminder" />

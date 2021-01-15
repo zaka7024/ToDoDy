@@ -138,10 +138,11 @@ class TodoEditorFragment : Fragment(R.layout.fragment_todo_editor) {
             } else {
                 date.text = "${todoItem.todo.date.toString()}"
             }
+
             if (todoItem.todo.reminderTime != null) {
-                reminder.text = todoItem.todo.reminderTime.toString()
+                reminder.text = "${todoItem.todo.date.toString()} : ${Utils.getDateTimeIn24Format(todoItem.todo.reminderTime as Date)}"
             } else {
-                reminder.text = "No Reminder"
+                reminder.text = getString(R.string.no_reminder)
             }
 
             //

@@ -34,6 +34,7 @@ import com.kizitonwose.calendarview.model.DayOwner
 import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.MonthScrollListener
 import com.kizitonwose.calendarview.ui.ViewContainer
+import com.zaka7024.todody.MainActivity
 import com.zaka7024.todody.TodoSublistAdapter
 import com.zaka7024.todody.R
 import com.zaka7024.todody.data.Category
@@ -43,6 +44,7 @@ import com.zaka7024.todody.data.TodosWithSubitems
 import com.zaka7024.todody.databinding.CalendarDayLayoutBinding
 import com.zaka7024.todody.databinding.FragmentTaskBinding
 import com.zaka7024.todody.utils.AlarmReceiver
+import com.zaka7024.todody.utils.NotificationHelper
 import com.zaka7024.todody.utils.WrapContentLinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.todo_calendar_layout.*
@@ -234,8 +236,8 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
     }
 
     interface CalendarEventsListener {
-        fun onSelectTime(calendar: Calendar)
-        fun onSelectReminder(calendar: Calendar)
+        fun onSelectTime(calendar: Calendar?)
+        fun onSelectReminder(calendar: Calendar?)
         fun onSelectDate(localDate: LocalDate)
     }
 
@@ -346,11 +348,11 @@ fun showCreateTodoDialog(
         val todoCalender = findViewById<ImageView>(R.id.todo_calendar)
         todoCalender.setOnClickListener {
             showCalendar(context, object : TaskFragment.CalendarEventsListener {
-                override fun onSelectTime(calendar: Calendar) {
+                override fun onSelectTime(calendar: Calendar?) {
                     time = calendar
                 }
 
-                override fun onSelectReminder(calendar: Calendar) {
+                override fun onSelectReminder(calendar: Calendar?) {
                     reminderTime = calendar
                 }
 
@@ -460,27 +462,6 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
                     }
                 }
 
-                when (currentSelectedDay) {
-                    day.date -> {
-                        textView.setTextColor(
-                            ResourcesCompat.getColor(
-                                context.resources,
-                                R.color.primaryDarkColor,
-                                null
-                            )
-                        )
-                        textView.background = ResourcesCompat.getDrawable(
-                            context.resources,
-                            R.drawable.calendar_day_bg,
-                            null
-                        )
-                    }
-                    else -> {
-                        //textView.setTextColorRes(R.color.example_1_white)
-                        textView.background = null
-                    }
-                }
-
                 if (day.owner == DayOwner.THIS_MONTH) {
                     container.textView.setTextColor(
                         ResourcesCompat.getColor(
@@ -498,6 +479,27 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
                         )
                     )
                 }
+
+                when (currentSelectedDay) {
+                    day.date -> {
+                        textView.setTextColor(
+                            ResourcesCompat.getColor(
+                                context.resources,
+                                R.color.primaryLightColor,
+                                null
+                            )
+                        )
+                        textView.background = ResourcesCompat.getDrawable(
+                            context.resources,
+                            R.drawable.calendar_day_bg,
+                            null
+                        )
+                    }
+                    else -> {
+                        //textView.setTextColorRes(R.color.example_1_white)
+                        textView.background = null
+                    }
+                }
             }
 
             override fun create(view: View) = TaskFragment.DayViewContainer(view)
@@ -505,7 +507,14 @@ fun showCalendar(context: Context, calendarEventsListener: TaskFragment.Calendar
 
         // Dismiss the dialog
         val cancelButton = findViewById<TextView>(R.id.cancelButton)
+        val doneButton = findViewById<TextView>(R.id.doneButton)
         cancelButton.setOnClickListener {
+            calendarEventsListener.onSelectReminder(null)
+            calendarEventsListener.onSelectTime(null)
+            dismiss()
+        }
+
+        doneButton.setOnClickListener {
             dismiss()
         }
 
