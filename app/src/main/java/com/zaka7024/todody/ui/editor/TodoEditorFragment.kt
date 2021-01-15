@@ -101,19 +101,24 @@ class TodoEditorFragment : Fragment(R.layout.fragment_todo_editor) {
             reminder.text = todoItem.todo.reminderTime.toString()
 
             //
-            val categories = mutableListOf<Category>()
-            category.setOnClickListener {
-                showCategoryPopup(requireContext(),categories, it,
-                    object : TaskFragment.CategoryPopupEventListener {
-                        override fun onSelectCategory(categoryName: String) {
+            editorViewModel.categories.observe(viewLifecycleOwner) {
+                userCategories->
+                if (userCategories != null) {
+                    category.setOnClickListener {
+                        showCategoryPopup(requireContext(), userCategories, it,
+                            object : TaskFragment.CategoryPopupEventListener {
+                                override fun onSelectCategory(categoryName: String) {
 
-                        }
+                                }
 
-                        override fun onCategoryAddButtonClick(popupMenu: PopupMenu) {
+                                override fun onCategoryAddButtonClick(popupMenu: PopupMenu) {
 
-                        }
-                    })
+                                }
+                            })
+                    }
+                }
             }
+
         }
     }
 }

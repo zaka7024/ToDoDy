@@ -1,8 +1,11 @@
 package com.zaka7024.todody.ui.editor
 
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaka7024.todody.data.Category
 import com.zaka7024.todody.data.Subitem
 import com.zaka7024.todody.data.Todo
 import com.zaka7024.todody.data.TodosWithSubitems
@@ -13,6 +16,10 @@ import kotlinx.coroutines.withContext
 
 class EditorViewModel @ViewModelInject constructor(private val todoRepository: TodoRepository) :
     ViewModel() {
+
+    private val _categories = todoRepository.categories
+    val categories: LiveData<List<Category>>
+        get() = _categories
 
     fun updateSubitem(subitem: Subitem) {
         viewModelScope.launch {
@@ -42,14 +49,6 @@ class EditorViewModel @ViewModelInject constructor(private val todoRepository: T
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 todoRepository.updateTodo(todo)
-            }
-        }
-    }
-
-    fun updateSubitems(todosWithSubitems: TodosWithSubitems) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                todoRepository.updateSubitems(todosWithSubitems)
             }
         }
     }
