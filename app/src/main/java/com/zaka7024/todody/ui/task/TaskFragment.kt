@@ -6,10 +6,10 @@ import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.Window
@@ -19,12 +19,12 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kizitonwose.calendarview.CalendarView
@@ -34,9 +34,8 @@ import com.kizitonwose.calendarview.model.DayOwner
 import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.MonthScrollListener
 import com.kizitonwose.calendarview.ui.ViewContainer
-import com.zaka7024.todody.MainActivity
-import com.zaka7024.todody.TodoSublistAdapter
 import com.zaka7024.todody.R
+import com.zaka7024.todody.TodoSublistAdapter
 import com.zaka7024.todody.data.Category
 import com.zaka7024.todody.data.Subitem
 import com.zaka7024.todody.data.Todo
@@ -44,7 +43,6 @@ import com.zaka7024.todody.data.TodosWithSubitems
 import com.zaka7024.todody.databinding.CalendarDayLayoutBinding
 import com.zaka7024.todody.databinding.FragmentTaskBinding
 import com.zaka7024.todody.utils.AlarmReceiver
-import com.zaka7024.todody.utils.NotificationHelper
 import com.zaka7024.todody.utils.WrapContentLinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.todo_calendar_layout.*
@@ -102,7 +100,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
         setupCategoryAdapter(binding, categories)
 
         // Setup all recycler views
-        setupTodayRecyclerView(binding)
+        setupTodayRecyclerView(binding, todos)
         setupOthersRecyclerView(binding)
         setupCategoryRecyclerView(binding)
 
@@ -222,7 +220,10 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
         }
     }
 
-    private fun setupTodayRecyclerView(binding: FragmentTaskBinding) {
+    private fun setupTodayRecyclerView(
+        binding: FragmentTaskBinding,
+        todos: MutableList<TodosWithSubitems>
+    ) {
         binding.apply {
             todayRv.adapter = todayTodoAdapter
             todayRv.layoutManager =
@@ -231,6 +232,68 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                     LinearLayoutManager.VERTICAL,
                     false
                 )
+
+            val itemTouchHelperCallback =
+                object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+
+                    val icon =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_calendar_today_24)
+                    val background =ContextCompat.getDrawable(requireContext(), R.drawable.rounded)
+
+                    init {
+                        background?.setTintList(
+                            ContextCompat.getColorStateList(
+                                requireContext(),
+                                R.color.redColor
+                            )
+                        )
+                    }
+
+                    override fun onMove(
+                        recyclerView: RecyclerView,
+                        viewHolder: RecyclerView.ViewHolder,
+                        target: RecyclerView.ViewHolder
+                    ): Boolean {
+                        return false
+                    }
+
+                    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                        val position = viewHolder.absoluteAdapterPosition
+                        val todo = todos.removeAt(position)
+                        taskViewModel.removeTodo(todo.todo)
+                        todayTodoAdapter.notifyItemRemoved(position)
+                    }
+
+                    override fun onChildDraw(
+                        c: Canvas,
+                        recyclerView: RecyclerView,
+                        viewHolder: RecyclerView.ViewHolder,
+                        dX: Float,
+                        dY: Float,
+                        actionState: Int,
+                        isCurrentlyActive: Boolean
+                    ) {
+                        super.onChildDraw(
+                            c,
+                            recyclerView,
+                            viewHolder,
+                            dX,
+                            dY,
+                            actionState,
+                            isCurrentlyActive
+                        )
+                        background?.setBounds(
+                            viewHolder.itemView.left,
+                            viewHolder.itemView.top,
+                            viewHolder.itemView.right,
+                            viewHolder.itemView.bottom
+                        )
+
+                        background?.draw(c)
+                        icon?.draw(c)
+                    }
+                }
+            ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.todayRv)
         }
     }
 

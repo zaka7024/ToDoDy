@@ -70,7 +70,7 @@
         app:layout_constraintStart_toEndOf="@+id/date"
         app:layout_constraintTop_toTopOf="@+id/date"
         app:srcCompat="@drawable/ic_baseline_format_list_bulleted_24"
-        app:tint="@color/secondaryDarkColor"
+        app:tint="@color/secondaryTextColor"
         tools:visibility="visible" />
 
     <ImageView
@@ -82,7 +82,7 @@
         app:layout_constraintStart_toEndOf="@+id/subitems_hint"
         app:layout_constraintTop_toTopOf="@+id/subitems_hint"
         app:srcCompat="@drawable/ic_baseline_access_time_24"
-        app:tint="@color/secondaryDarkColor" />
+        app:tint="@color/secondaryTextColor" />
 
     <ImageView
         android:id="@+id/alarm_hint"
@@ -93,5 +93,5 @@
         app:layout_constraintStart_toEndOf="@+id/time_hint"
         app:layout_constraintTop_toTopOf="@+id/time_hint"
         app:srcCompat="@drawable/ic_baseline_access_alarm_24"
-        app:tint="@color/secondaryDarkColor" />
+        app:tint="@color/secondaryTextColor" />
 </androidx.constraintlayout.widget.ConstraintLayout>

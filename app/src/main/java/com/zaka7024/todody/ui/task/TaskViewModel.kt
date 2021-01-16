@@ -70,6 +70,14 @@ class TaskViewModel @ViewModelInject constructor(private val todoRepository: Tod
         }
     }
 
+    fun removeTodo(todo: Todo) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                todoRepository.removeTodo(todo)
+            }
+        }
+    }
+
     fun saveTodo(todo: Todo, list: Array<Subitem>, categoryName: String) {
         viewModelScope.launch {
             if (todo.date == null) {
