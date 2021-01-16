@@ -59,8 +59,15 @@ class TodoAdapter(
             todoItemBinding.root.translationY -= offset
             todoItemBinding.root.animate().translationYBy(offset)
 
-            if (todoItem.subitems.isNotEmpty()) {
-                todoItemBinding.hint.visibility = View.VISIBLE
+            // Tod'd properties icon hints
+            if (todoItem.subitems.isEmpty()) {
+                todoItemBinding.subitemsHint.visibility = View.GONE
+            }
+            if (todoItem.todo.time == null) {
+                todoItemBinding.timeHint.visibility = View.GONE
+            }
+            if (todoItem.todo.reminderTime == null) {
+                todoItemBinding.alarmHint.visibility = View.GONE
             }
         }
 

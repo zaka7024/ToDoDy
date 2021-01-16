@@ -61,14 +61,37 @@
         app:srcCompat="@drawable/ic_round_star_border_24" />
 
     <ImageView
-        android:id="@+id/hint"
+        android:id="@+id/subitems_hint"
         android:layout_width="12dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/date"
         app:layout_constraintStart_toEndOf="@+id/date"
         app:layout_constraintTop_toTopOf="@+id/date"
         app:srcCompat="@drawable/ic_baseline_format_list_bulleted_24"
+        app:tint="@color/secondaryDarkColor"
         tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/time_hint"
+        android:layout_width="12dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/subitems_hint"
+        app:layout_constraintStart_toEndOf="@+id/subitems_hint"
+        app:layout_constraintTop_toTopOf="@+id/subitems_hint"
+        app:srcCompat="@drawable/ic_baseline_access_time_24"
+        app:tint="@color/secondaryDarkColor" />
+
+    <ImageView
+        android:id="@+id/alarm_hint"
+        android:layout_width="12dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/time_hint"
+        app:layout_constraintStart_toEndOf="@+id/time_hint"
+        app:layout_constraintTop_toTopOf="@+id/time_hint"
+        app:srcCompat="@drawable/ic_baseline_access_alarm_24"
+        app:tint="@color/secondaryDarkColor" />
 </androidx.constraintlayout.widget.ConstraintLayout>

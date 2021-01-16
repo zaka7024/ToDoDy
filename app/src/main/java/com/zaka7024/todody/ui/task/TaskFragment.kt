@@ -292,7 +292,7 @@ fun showCreateTodoDialog(
 
                 // Function called when keyboard enter button clicked
                 override fun onClickEnter() {
-                    subTodoList.add(Subitem(item = "Item ${subTodoList.size}"))
+                    subTodoList.add(Subitem(item = ""))
                     adapter.notifyItemInserted(subTodoList.size - 1)
                     sublistRecyclerView.scrollToPosition(subTodoList.size - 1)
                 }
