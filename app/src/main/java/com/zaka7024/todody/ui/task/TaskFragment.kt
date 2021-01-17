@@ -237,8 +237,11 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                 object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
                     val icon =
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_calendar_today_24)
-                    val background =ContextCompat.getDrawable(requireContext(), R.drawable.rounded)
+                        ContextCompat.getDrawable(
+                            requireContext(),
+                            R.drawable.ic_baseline_calendar_today_24
+                        )
+                    val background = ContextCompat.getDrawable(requireContext(), R.drawable.rounded)
 
                     init {
                         background?.setTintList(
@@ -449,7 +452,7 @@ fun showCreateTodoDialog(
         }
 
         var time: Calendar? = null
-        var reminderTime: Calendar? = null
+        var reminderTime = Calendar.getInstance()
         var selectedDate: LocalDate? = null
 
         // Show calender view
@@ -458,10 +461,20 @@ fun showCreateTodoDialog(
             showCalendar(context, object : TaskFragment.CalendarEventsListener {
                 override fun onSelectTime(calendar: Calendar?) {
                     time = calendar
+                    reminderTime.apply {
+                        set(Calendar.YEAR, selectedDate?.dayOfYear!!)
+                        set(Calendar.MONTH, selectedDate?.month!!.value)
+                        set(Calendar.DAY_OF_MONTH, selectedDate?.dayOfMonth!!)
+                    }
                 }
 
                 override fun onSelectReminder(calendar: Calendar?) {
-                    reminderTime = calendar
+                    if(calendar != null) {
+                        reminderTime.apply {
+                            set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY))
+                            set(Calendar.MINUTE, calendar.get(Calendar.MINUTE))
+                        }
+                    }
                 }
 
                 override fun onSelectDate(localDate: LocalDate) {
@@ -568,6 +581,7 @@ fun showCalendar(
                     TaskFragment.DayViewContainer.SetOnDayViewClickListener {
                     override fun onclick() {
                         currentSelectedDay = day.date
+
                         calendarEventsListener.onSelectDate(currentSelectedDay)
                         calendarView.notifyCalendarChanged()
                     }
@@ -650,7 +664,6 @@ fun showCalendar(
         }
 
         val timeCalendar = Calendar.getInstance()
-
         //
         timeButton.setOnClickListener {
             val timePickerDialog = TimePickerDialog(

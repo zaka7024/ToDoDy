@@ -17,7 +17,7 @@ Todo app using **kotlin and Room**
 🟢 Ability to add Todo with sublist \
 🟢 Ability to edit or remove the todo \
 🟢 Todo categories \
-🟢 Reminder by notifications \
+🟢 Reminder by notifications
 
 # Screenshots
 

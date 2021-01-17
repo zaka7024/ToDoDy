@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded"
+        android:backgroundTint="@color/primaryLightColor"
         android:paddingStart="8dp"
         android:paddingTop="16dp"
         android:paddingEnd="8dp"
@@ -31,7 +32,6 @@
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            tools:layout_height="300dp"
             android:layout_margin="16dp"
             android:layout_marginTop="12dp"
             app:cv_dayViewResource="@layout/calendar_day_layout"
@@ -42,7 +42,8 @@
             app:cv_scrollMode="paged"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/beforeMonth" />
+            app:layout_constraintTop_toBottomOf="@+id/beforeMonth"
+            tools:layout_height="300dp" />
 
         <ImageView
             android:id="@+id/imageView"
