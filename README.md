@@ -1,5 +1,5 @@
 # ToDoDy
-Todo app using kotlin and Room
+Todo app using **kotlin and Room**
 
 # Libraries And Tools
 
@@ -8,12 +8,16 @@ Todo app using kotlin and Room
 - viewBinding
 - Dagger Hilt
 
+# Preview
+
+![preview](screenshots/preview.gif?raw=true "")
+
 # Screenshots
 
-![Alt text](screenshots/screenshot_1.png?raw=true)
-![Alt text](screenshots/screenshot_2.png?raw=true)
-![Alt text](screenshots/screenshot_3.png?raw=true)
-![Alt text](screenshots/screenshot_4.png?raw=true)
+![screenshot](screenshots/screenshot_1.png?raw=true)
+![screenshot](screenshots/screenshot_2.png?raw=true)
+![screenshot](screenshots/screenshot_3.png?raw=true)
+![screenshot](screenshots/screenshot_4.png?raw=true)
 
 # Features
 
