@@ -44,6 +44,7 @@ class TaskViewModel @ViewModelInject constructor(private val todoRepository: Tod
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onTaskFragmentResume() {
         getTodayTodos(currentSelectedCategory.value?.categoryId ?: 1)
+        getOthersTodos(currentSelectedCategory.value?.categoryId ?: 1)
     }
 
     private fun getTodayTodos(categoryId: Long) {

@@ -10,6 +10,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.Window
@@ -101,7 +102,7 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
 
         // Setup all recycler views
         setupTodayRecyclerView(binding, todos)
-        setupOthersRecyclerView(binding)
+        setupOthersRecyclerView(binding, otherTodos)
         setupCategoryRecyclerView(binding)
 
         // Get all todos form the selected category for today and notify the adapter
@@ -208,7 +209,10 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
         }
     }
 
-    private fun setupOthersRecyclerView(binding: FragmentTaskBinding) {
+    private fun setupOthersRecyclerView(
+        binding: FragmentTaskBinding,
+        otherTodos: MutableList<TodosWithSubitems>
+    ) {
         binding.apply {
             otherRv.adapter = othersTodoAdapter
             otherRv.layoutManager =
@@ -217,6 +221,15 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                     LinearLayoutManager.VERTICAL,
                     false
                 )
+
+            ItemTouchHelper(ItemTouchHelperCallback(
+                requireContext()
+            ) { position ->
+                val todo = otherTodos.removeAt(position)
+                taskViewModel.removeTodo(todo.todo)
+                othersTodoAdapter.notifyItemRemoved(position)
+            }
+            ).attachToRecyclerView(binding.otherRv)
         }
     }
 
@@ -232,71 +245,14 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
                     LinearLayoutManager.VERTICAL,
                     false
                 )
-
-            val itemTouchHelperCallback =
-                object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-
-                    val icon =
-                        ContextCompat.getDrawable(
-                            requireContext(),
-                            R.drawable.ic_baseline_calendar_today_24
-                        )
-                    val background = ContextCompat.getDrawable(requireContext(), R.drawable.rounded)
-
-                    init {
-                        background?.setTintList(
-                            ContextCompat.getColorStateList(
-                                requireContext(),
-                                R.color.redColor
-                            )
-                        )
-                    }
-
-                    override fun onMove(
-                        recyclerView: RecyclerView,
-                        viewHolder: RecyclerView.ViewHolder,
-                        target: RecyclerView.ViewHolder
-                    ): Boolean {
-                        return false
-                    }
-
-                    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                        val position = viewHolder.absoluteAdapterPosition
-                        val todo = todos.removeAt(position)
-                        taskViewModel.removeTodo(todo.todo)
-                        todayTodoAdapter.notifyItemRemoved(position)
-                    }
-
-                    override fun onChildDraw(
-                        c: Canvas,
-                        recyclerView: RecyclerView,
-                        viewHolder: RecyclerView.ViewHolder,
-                        dX: Float,
-                        dY: Float,
-                        actionState: Int,
-                        isCurrentlyActive: Boolean
-                    ) {
-                        super.onChildDraw(
-                            c,
-                            recyclerView,
-                            viewHolder,
-                            dX,
-                            dY,
-                            actionState,
-                            isCurrentlyActive
-                        )
-                        background?.setBounds(
-                            viewHolder.itemView.left,
-                            viewHolder.itemView.top,
-                            viewHolder.itemView.right,
-                            viewHolder.itemView.bottom
-                        )
-
-                        background?.draw(c)
-                        icon?.draw(c)
-                    }
-                }
-            ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.todayRv)
+            ItemTouchHelper(ItemTouchHelperCallback(
+                requireContext()
+            ) { position ->
+                val todo = todos.removeAt(position)
+                taskViewModel.removeTodo(todo.todo)
+                todayTodoAdapter.notifyItemRemoved(position)
+            }
+            ).attachToRecyclerView(binding.todayRv)
         }
     }
 
@@ -317,7 +273,20 @@ class TaskFragment : Fragment(R.layout.fragment_task) {
     }
 
     private fun setupOthersAdapter(otherTodos: MutableList<TodosWithSubitems>) {
-        othersTodoAdapter = TodoAdapter(otherTodos)
+        othersTodoAdapter =
+            TodoAdapter(otherTodos, object : TodoAdapter.OnTodoHolderEventsListener {
+                override fun onClick(todoItem: TodosWithSubitems) {
+                    findNavController().navigate(
+                        TaskFragmentDirections.actionTaskFragmentToTodoEditor2(
+                            todoItem
+                        )
+                    )
+                }
+
+                override fun onCompleteTodo(todoItem: TodosWithSubitems) {
+                    taskViewModel.updateTodo(todoItem.todo)
+                }
+            })
     }
 
     private fun setupCategoryAdapter(binding: FragmentTaskBinding, categories: List<Category>) {
@@ -452,7 +421,7 @@ fun showCreateTodoDialog(
         }
 
         var time: Calendar? = null
-        var reminderTime = Calendar.getInstance()
+        var reminderTime: Calendar? = null
         var selectedDate: LocalDate? = null
 
         // Show calender view
@@ -461,24 +430,31 @@ fun showCreateTodoDialog(
             showCalendar(context, object : TaskFragment.CalendarEventsListener {
                 override fun onSelectTime(calendar: Calendar?) {
                     time = calendar
-                    reminderTime.apply {
-                        set(Calendar.YEAR, selectedDate?.dayOfYear!!)
-                        set(Calendar.MONTH, selectedDate?.month!!.value)
-                        set(Calendar.DAY_OF_MONTH, selectedDate?.dayOfMonth!!)
-                    }
                 }
 
                 override fun onSelectReminder(calendar: Calendar?) {
-                    if(calendar != null) {
-                        reminderTime.apply {
+                    if (calendar != null) {
+                        reminderTime?.apply {
+                            set(Calendar.YEAR, selectedDate?.dayOfYear!!)
+                            set(Calendar.MONTH, selectedDate?.month!!.value)
+                            set(Calendar.DAY_OF_MONTH, selectedDate?.dayOfMonth!!)
                             set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY))
                             set(Calendar.MINUTE, calendar.get(Calendar.MINUTE))
                         }
+                    } else {
+                        reminderTime = calendar
                     }
                 }
 
                 override fun onSelectDate(localDate: LocalDate) {
                     selectedDate = localDate
+                    if(reminderTime != null) {
+                        reminderTime?.apply {
+                            set(Calendar.YEAR, localDate.dayOfYear)
+                            set(Calendar.MONTH, localDate.month.value)
+                            set(Calendar.DAY_OF_MONTH, localDate.dayOfMonth)
+                        }
+                    }
                 }
             }, defaultDate)
         }
